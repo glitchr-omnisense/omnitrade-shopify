@@ -107,7 +107,7 @@ $product = $shopify->fetchProduct('https://cave.example/products/margaux-2019');
 $stocks = $shopify->fetchInventory(['gid://shopify/ProductVariant/7', '8']);
 ```
 
-With the harness of glitchr/omnitrade (`core/docker`):
+With the harness of omniscient/omnitrade (`core/docker`):
 
 ```sh
 docker compose run --rm omnitrade catalogue shopify --since=-1day

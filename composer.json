@@ -7,7 +7,7 @@
     "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
     "require": {
         "php": ">=8.2",
-        "glitchr/omnitrade": "^1.0@dev",
+        "omniscient/omnitrade": "^1.0@dev",
         "psr/log": "^1.1|^2.0|^3.0",
         "symfony/http-client": "^6.4|^7.0|^8.0"
     },
