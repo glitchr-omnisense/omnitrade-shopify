@@ -3,13 +3,13 @@ title: Catalogue
 order: 10
 ---
 
-## Shopify's catalogue
+# Shopify's catalogue
 
 The shop's products, variants and inventory, read through the
 [omnitrade catalogue contract](https://github.com/glitchr-studio/omnitrade/blob/1.x/docs/catalogue.md)
 over the Admin GraphQL API (the cost bucket is respected, a THROTTLED answer retried).
 
-### Setting it up
+## Setting it up
 
 ```sh
 composer require omnitrade/shopify symfony/http-client
@@ -34,7 +34,7 @@ The custom app needs the `read_products` and `read_inventory` scopes (on top of
 |---|---|---|
 | `currency` | `null` | The currency of the prices. Shopify's prices are bare decimals in the shop's currency: by default it is read with them (`shop { currencyCode }`, in the same query for `fetchProducts()`/`fetchProduct()`, once per gateway for the webhooks). |
 
-### Requests
+## Requests
 
 | Request | What is sent |
 |---|---|
@@ -44,7 +44,7 @@ The custom app needs the `read_products` and `read_inventory` scopes (on top of
 
 Each product carries at most 100 variants, 20 collections, 20 metafields and 20 media.
 
-### What is mapped how
+## What is mapped how
 
 | Shopify | omnitrade |
 |---|---|
@@ -67,7 +67,7 @@ Each product carries at most 100 variants, 20 collections, 20 metafields and 20 
 | variant `image` | `ProductVariant::$image` |
 | `inventoryItem.measurement.weight` | `weight` in grams |
 
-### Webhooks
+## Webhooks
 
 Subscribe the app to `products/create`, `products/update`, `products/delete` and
 `inventory_levels/update`; `notify()` checks the HMAC and the shop as for the orders.
@@ -89,7 +89,7 @@ if ($notification->isCatalogue()) {
 }
 ```
 
-### Examples
+## Examples
 
 ```php
 $page = $shopify->fetchProducts(updatedSince: $lastSync);
