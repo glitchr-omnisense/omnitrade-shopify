@@ -21,8 +21,9 @@ final class Api
         HttpClientInterface $http,
         public readonly array $draftOrderTags = [],
         ?LoggerInterface $logger = null,
+        float $retryDelay = 1.0,
     ) {
-        $graphql = new GraphQL($http, $logger);
+        $graphql = new GraphQL($http, $logger, null, $retryDelay);
         $this->admin = new AdminApi($graphql, $endpoint);
         $this->storefront = new StorefrontApi($graphql, $endpoint);
     }

@@ -22,6 +22,7 @@ omnitrade:
                 webhook_secret: '%env(SHOPIFY_WEBHOOK_SECRET)%' # the app's API secret, for notify()
                 draft_order_tags: [omnitrade]
                 currency: null                                  # the catalogue's currency; null: the shop's
+                retry_delay: 1                                  # seconds before retrying a 429 / 5xx, doubled each time (3 attempts); a 429's Retry-After prevails
 ```
 
 `purchase()` creates a draft order and answers PENDING with its invoice URL; Shopify never

@@ -28,6 +28,7 @@ use Symfony\Component\HttpClient\HttpClient;
  *     timeout: 15
  *     draft_order_tags: []                             # tags put on the draft orders it creates
  *     currency: null                                   # the catalogue's prices' currency; null: the shop's
+ *     retry_delay: 1                                   # seconds before retrying a 429 / 5xx (doubled each time, 3 attempts); a 429's Retry-After prevails
  *
  * No authorizations, captures nor refunds from here: Shopify's own admin does
  * those on its orders.
@@ -46,10 +47,11 @@ final class ShopifyGatewayFactory extends GatewayFactory
             'timeout' => 15,
             'draft_order_tags' => [],
             'currency' => null,
+            'retry_delay' => 1,
             'omnitrade.api' => function (Config $c) {
                 $http = $this->http ?? HttpClient::create();
 
-                return new Api(new Endpoint($c['shop_domain'], $c['api_version'], $c['admin_token'], $c['storefront_token'], $c['webhook_secret'], (int) $c['timeout']), $http, (array) $c['draft_order_tags']);
+                return new Api(new Endpoint($c['shop_domain'], $c['api_version'], $c['admin_token'], $c['storefront_token'], $c['webhook_secret'], (int) $c['timeout']), $http, (array) $c['draft_order_tags'], null, (float) $c['retry_delay']);
             },
             'omnitrade.action.purchase' => new PurchaseAction(),
             'omnitrade.action.fetch' => new FetchTransactionAction(),

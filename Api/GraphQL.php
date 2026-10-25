@@ -28,6 +28,8 @@ class GraphQL
         private readonly HttpClientInterface $http,
         private readonly ?LoggerInterface $logger = null,
         ?callable $sleep = null,
+        /** The first retry's wait in seconds, doubled at each attempt; a 429's Retry-After prevails. */
+        private readonly float $retryDelay = 1.0,
     ) {
         // Injected so a test can assert the wait instead of serving it.
         $this->sleep = $sleep ?? static function (float $seconds): void {
@@ -61,7 +63,8 @@ class GraphQL
             // 429 and 5xx are worth another go; 401/403/404 never are.
             if (429 === $status || $status >= 500) {
                 if ($attempt < self::MAX_ATTEMPTS) {
-                    ($this->sleep)($this->backoff($attempt));
+                    $retryAfter = $response->getHeaders(false)['retry-after'][0] ?? null;
+                    ($this->sleep)(429 === $status && is_numeric($retryAfter) ? min((float) $retryAfter, 60.0) : $this->backoff($attempt));
                     continue;
                 }
                 throw new ShopifyApiException(sprintf('Shopify returned HTTP %d after %d attempts.', $status, $attempt));
@@ -126,6 +129,6 @@ class GraphQL
 
     private function backoff(int $attempt): float
     {
-        return 2 ** ($attempt - 1);
+        return $this->retryDelay * 2 ** ($attempt - 1);
     }
 }
