@@ -211,8 +211,10 @@ connected accounts and subscriptions raise `RequestNotSupportedException` before
 
 Tested offline, 24 tests on answers shaped as the Admin GraphQL API documents them:
 `Tests/ShopifyGatewayTest.php` (a draft order paid on its invoice page, fetched as what became of
-it, a shop order, a webhook's HMAC and shop), `Tests/ShopifyCatalogueTest.php` (8 tests, listed in
-[the catalogue's section](catalogue.md#shopifys-catalogue)) and `Tests/ShopifyContractTest.php`,
+it, a shop order, a webhook's HMAC and shop), `Tests/ShopifyCatalogueTest.php` (the catalogue page by page, a product mapped whole, the `currency`
+option winning over the shop's, a product found by id, bare id and page, the inventory by variant
+or whole, the REST and GraphQL shapes giving the same product, untracked inventory as a `null`
+quantity, the product and inventory webhooks) and `Tests/ShopifyContractTest.php`,
 the family's conformance suite. The suite found a 429 retried after a fixed backoff whatever
 `Retry-After` said; `Retry-After` now prevails, and `retry_delay` sets the backoff (0 in tests).
 
