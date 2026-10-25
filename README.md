@@ -47,6 +47,9 @@ Credentials: a custom app in the shop's admin (Settings → Apps → Develop app
 `write_draft_orders`, `read_orders` scopes, its Admin API access token, and the app's API
 secret for the webhooks (`orders/paid`, `orders/cancelled`, `refunds/create` to your endpoint).
 
+The manual, [docs/index.md](docs/index.md): every option, what each operation sends and reads, the
+webhook topics, retries and the cost bucket, errors, and what is verified.
+
 ## Responsibility
 
 This package is an independent, unofficial client: it is not affiliated with, endorsed by or
