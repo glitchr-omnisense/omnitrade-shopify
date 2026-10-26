@@ -1,6 +1,6 @@
 # omnitrade/shopify
 
-Shopify for [omniscient/omnitrade](https://github.com/glitchr-studio/omnitrade): a sale paid on the
+Shopify for [omnisense/omnitrade](https://github.com/glitchr-omnisense/omnitrade): a sale paid on the
 shop's invoice page (a draft order with the shop's prices or the application's), the shop's
 orders, its catalogue (products, variants, inventory) and its webhooks - over the Admin GraphQL
 API, its cost bucket respected. Every call is one `POST` of a GraphQL document to
@@ -28,7 +28,7 @@ sandbox address: a development store is the test shop.
 composer require omnitrade/shopify
 ```
 
-Requires PHP 8.2, `omniscient/omnitrade` (1.x), `symfony/http-client` (6.4, 7 or 8) and `psr/log`.
+Requires PHP 8.2, `omnisense/omnitrade` (1.x), `symfony/http-client` (6.4, 7 or 8) and `psr/log`.
 In a Symfony application with `Omnitrade\Bridge\Symfony\OmnitradeBundle`, the factory is
 registered as soon as the package is installed.
 

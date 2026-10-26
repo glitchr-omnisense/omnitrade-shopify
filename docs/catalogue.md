@@ -6,7 +6,7 @@ order: 10
 # Shopify's catalogue
 
 The shop's products, variants and inventory, read through the
-[omnitrade catalogue contract](https://github.com/glitchr-studio/omnitrade/blob/1.x/docs/catalogue.md)
+[omnitrade catalogue contract](https://github.com/glitchr-omnisense/omnitrade/blob/1.x/docs/catalogue.md)
 over the Admin GraphQL API (the cost bucket is respected, a THROTTLED answer retried).
 
 ## Setting it up
@@ -107,7 +107,7 @@ $product = $shopify->fetchProduct('https://cave.example/products/margaux-2019');
 $stocks = $shopify->fetchInventory(['gid://shopify/ProductVariant/7', '8']);
 ```
 
-With the harness of omniscient/omnitrade (`core/docker`):
+With the harness of omnisense/omnitrade (`core/docker`):
 
 ```sh
 docker compose run --rm omnitrade catalogue shopify --since=-1day

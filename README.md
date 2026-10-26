@@ -1,6 +1,6 @@
 # omnitrade/shopify
 
-Shopify for [omniscient/omnitrade](https://github.com/glitchr-studio/omnitrade): a sale paid on the
+Shopify for [omnisense/omnitrade](https://github.com/glitchr-omnisense/omnitrade): a sale paid on the
 shop's invoice page (a draft order with your prices), the shop's orders, its catalogue, and its webhooks - over
 the Admin GraphQL API, its cost bucket respected.
 
@@ -8,7 +8,7 @@ the Admin GraphQL API, its cost bucket respected.
 $gateway = (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => '...']);   // $http: the application's HTTP client; none given, the factory makes its own
 ```
 
-No framework needed: the package requires `omniscient/omnitrade` and `symfony/http-client`. In a
+No framework needed: the package requires `omnisense/omnitrade` and `symfony/http-client`. In a
 Symfony application, the same through the bundle's configuration:
 
 ```yaml
