@@ -53,7 +53,6 @@ $gateway = (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example
 | `shop_domain` | string | - | yes | `example.myshopify.com` |
 | `admin_token` | string | - | yes | the Admin API access token |
 | `webhook_secret` | ?string | `null` | for `notify()` | the app's API secret |
-| `storefront_token` | ?string | `null` | no | a Storefront API token: the package builds a Storefront client with it, but no action calls it |
 | `api_version` | string | `2026-07` | no | the Admin API version |
 | `timeout` | int | `15` | no | seconds |
 | `draft_order_tags` | list of strings | `[]` | no | tags put on the draft orders `purchase()` creates |

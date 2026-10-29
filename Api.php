@@ -5,7 +5,6 @@ namespace Omnitrade\Shopify;
 use Omnitrade\Shopify\Api\AdminApi;
 use Omnitrade\Shopify\Api\Endpoint;
 use Omnitrade\Shopify\Api\GraphQL;
-use Omnitrade\Shopify\Api\StorefrontApi;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -13,7 +12,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class Api
 {
     public readonly AdminApi $admin;
-    public readonly StorefrontApi $storefront;
 
     /** @param string[] $draftOrderTags */
     public function __construct(
@@ -25,6 +23,5 @@ final class Api
     ) {
         $graphql = new GraphQL($http, $logger, null, $retryDelay);
         $this->admin = new AdminApi($graphql, $endpoint);
-        $this->storefront = new StorefrontApi($graphql, $endpoint);
     }
 }

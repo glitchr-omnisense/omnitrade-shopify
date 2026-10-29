@@ -12,7 +12,6 @@ final class Endpoint
     public readonly string $shopDomain;
     public readonly string $apiVersion;
     public readonly string $adminToken;
-    public readonly string $storefrontToken;
     public readonly string $webhookSecret;
     public readonly int $timeout;
 
@@ -20,14 +19,12 @@ final class Endpoint
         ?string $shopDomain = '',
         ?string $apiVersion = '2026-07',
         ?string $adminToken = '',
-        ?string $storefrontToken = '',
         ?string $webhookSecret = '',
         ?int $timeout = 15,
     ) {
         $this->shopDomain = trim((string) $shopDomain);
         $this->apiVersion = trim((string) $apiVersion) ?: '2026-07';
         $this->adminToken = trim((string) $adminToken);
-        $this->storefrontToken = trim((string) $storefrontToken);
         $this->webhookSecret = trim((string) $webhookSecret);
         $this->timeout = $timeout ?: 15;
     }
@@ -52,11 +49,6 @@ final class Endpoint
     public function adminUrl(): string
     {
         return sprintf('https://%s/admin/api/%s/graphql.json', $this->shopDomain, $this->apiVersion);
-    }
-
-    public function storefrontUrl(): string
-    {
-        return sprintf('https://%s/api/%s/graphql.json', $this->shopDomain, $this->apiVersion);
     }
 
     /** The admin URL of one resource, for an "open in Shopify" link. */
