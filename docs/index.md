@@ -194,7 +194,7 @@ Every failure is an `Omnitrade\Shopify\Api\ShopifyApiException`, a `ProviderExce
 
 - `Shopify returned HTTP <status>.` (401, 403, 404...), `Shopify returned HTTP <status> after 3
   attempts.` (429, 5xx), `Shopify returned a body that is not JSON.`, `Shopify request failed: ...`
-  (a network failure, the exception as `previous`);
+  (a network failure, a copy of the HTTP client's exception as `previous`);
 - GraphQL `errors`: `Shopify rejected the query: <message>; ...`; a mutation's `userErrors`:
   `draftOrderCreate: <field>: <message>`;
 - `Shopify created no draft order with an invoice URL.`, `Shopify knows no order ...`;
@@ -205,6 +205,12 @@ A missing `shop_domain` or `admin_token` is an `InvalidConfigException` when the
 `Authorize`, `Capture`, `VoidAuthorization`, `Refund`, `GetPaymentMethods`, `AffiliateLink`,
 connected accounts and subscriptions raise `RequestNotSupportedException` before any call.
 `fetchProduct()` of a product the shop does not have is `null`.
+
+No failure carries the admin token: a network failure's message has them masked as `***` (the key
+parameters of a URL too), its previous is a copy of the HTTP client's exception (the same class and
+code, without its request), and no trace of the chain keeps its arguments, where the request's
+options stood ([No secret in a
+failure](https://github.com/glitchr-omnisense/omnitrade/blob/1.x/docs/errors.md#no-secret-in-a-failure)).
 
 ## Verified, and not
 

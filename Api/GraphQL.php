@@ -2,6 +2,7 @@
 
 namespace Omnitrade\Shopify\Api;
 
+use Omnitrade\Http\Redaction;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -13,7 +14,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * knows two things about Shopify: the Admin API is a leaky bucket costed per
  * query (extensions.cost.throttleStatus), waited for when it runs low; and a
  * THROTTLED answer is retried with backoff. The access token never reaches a
- * log or an exception message.
+ * log or an exception: not its message, its previous (a copy of the HTTP
+ * client's, Redaction::copy()) nor its trace's arguments.
  */
 class GraphQL
 {
@@ -49,16 +51,16 @@ class GraphQL
         $attempt = 0;
         while (true) {
             ++$attempt;
+            $options = ['headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'] + $headers, 'timeout' => $timeout];
             try {
-                $response = $this->http->request('POST', $url, [
-                    'headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'] + $headers,
-                    'body' => json_encode(['query' => $document, 'variables' => (object) $variables], \JSON_THROW_ON_ERROR),
-                    'timeout' => $timeout,
-                ]);
+                $options['body'] = json_encode(['query' => $document, 'variables' => (object) $variables], \JSON_THROW_ON_ERROR);
+                $response = $this->http->request('POST', $url, $options);
                 $status = $response->getStatusCode();
                 $body = $response->getContent(false);
             } catch (HttpExceptionInterface|\JsonException $e) {
-                throw new ShopifyApiException('Shopify request failed: '.$e->getMessage(), [], $e);
+                $secrets = Redaction::secrets($url, $options);
+
+                throw Redaction::withoutArguments(new ShopifyApiException('Shopify request failed: '.Redaction::text($e->getMessage(), $secrets), [], Redaction::copy($e, $secrets)));
             }
             // 429 and 5xx are worth another go; 401/403/404 never are.
             if (429 === $status || $status >= 500) {
@@ -67,21 +69,21 @@ class GraphQL
                     ($this->sleep)(429 === $status && is_numeric($retryAfter) ? min((float) $retryAfter, 60.0) : $this->backoff($attempt));
                     continue;
                 }
-                throw new ShopifyApiException(sprintf('Shopify returned HTTP %d after %d attempts.', $status, $attempt));
+                throw Redaction::withoutArguments(new ShopifyApiException(sprintf('Shopify returned HTTP %d after %d attempts.', $status, $attempt)));
             }
             if ($status >= 400) {
-                throw new ShopifyApiException(sprintf('Shopify returned HTTP %d.', $status));
+                throw Redaction::withoutArguments(new ShopifyApiException(sprintf('Shopify returned HTTP %d.', $status)));
             }
             $payload = json_decode($body, true);
             if (!\is_array($payload)) {
-                throw new ShopifyApiException('Shopify returned a body that is not JSON.');
+                throw Redaction::withoutArguments(new ShopifyApiException('Shopify returned a body that is not JSON.'));
             }
             if (!empty($payload['errors'])) {
                 if ($this->isThrottled($payload['errors']) && $attempt < self::MAX_ATTEMPTS) {
                     ($this->sleep)($this->backoff($attempt));
                     continue;
                 }
-                throw ShopifyApiException::fromErrors('Shopify rejected the query', $payload['errors']);
+                throw Redaction::withoutArguments(ShopifyApiException::fromErrors('Shopify rejected the query', $payload['errors']));
             }
             $this->respectBucket($payload);
 
