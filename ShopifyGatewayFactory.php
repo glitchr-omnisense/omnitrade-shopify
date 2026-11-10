@@ -27,7 +27,7 @@ use Symfony\Component\HttpClient\HttpClient;
  *     timeout: 15
  *     draft_order_tags: []                             # tags put on the draft orders it creates
  *     currency: null                                   # the catalogue's prices' currency; null: the shop's
- *     retry_delay: 1                                   # seconds before retrying a 429 / 5xx (doubled each time, 3 attempts); a 429's Retry-After prevails
+ *     retry_delay: 1                                   # seconds before retrying a query on 429 / 5xx (doubled each time, 3 attempts; a 429's Retry-After prevails); a mutation is never retried
  *
  * No authorizations, captures nor refunds from here: Shopify's own admin does
  * those on its orders.
@@ -40,6 +40,7 @@ final class ShopifyGatewayFactory extends GatewayFactory
             'omnitrade.factory_name' => 'shopify',
             'omnitrade.factory_title' => 'Shopify',
             'omnitrade.required_options' => ['shop_domain', 'admin_token'],
+            'omnitrade.policy' => __DIR__.'/policy.json',
             'webhook_secret' => null,
             'api_version' => '2026-07',
             'timeout' => 15,
@@ -49,7 +50,7 @@ final class ShopifyGatewayFactory extends GatewayFactory
             'omnitrade.api' => function (Config $c) {
                 $http = $this->http ?? HttpClient::create();
 
-                return new Api(new Endpoint($c['shop_domain'], $c['api_version'], $c['admin_token'], $c['webhook_secret'], (int) $c['timeout']), $http, (array) $c['draft_order_tags'], null, (float) $c['retry_delay']);
+                return new Api(new Endpoint($c['shop_domain'], $c['api_version'], $c['admin_token'], $c['webhook_secret'], (int) $c['timeout']), $http, (array) $c['draft_order_tags'], null, (float) $c['retry_delay'], $c->backoff());
             },
             'omnitrade.action.purchase' => new PurchaseAction(),
             'omnitrade.action.fetch' => new FetchTransactionAction(),

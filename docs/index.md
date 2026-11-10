@@ -195,6 +195,17 @@ $order = $shopify->fetchOrder($shopify->fetch($transaction->reference)->metadata
 In the core's Docker harness: `docker compose run --rm omnitrade purchase shopify --line
 "Margaux=1200x2@gid://shopify/ProductVariant/7"`, `catalogue shopify --since='-1 day'`.
 
+## Usage policy
+
+`policy.json` (named in `composer.json`'s `extra.omnisense.policy`) declares 2 calls a second per
+token. That is the stricter form the schema can express. Shopify's real rule for the Admin
+GraphQL API is cost-based: a bucket of query points restored at 100 a second on the standard
+plans, at most 1,000 points per query. The client reads it from each answer and waits when the
+bucket runs low. A mutation (`draftOrderCreate`) is never sent twice, since Shopify documents no
+idempotency for it. A 5xx is a `ProviderException`, and the draft order may exist. A 429 or
+`THROTTLED` is a `RateLimitedException`: Shopify ran nothing. Queries are retried as before. See
+omnisense/omnitrade's [Usage policies and rate limits](https://github.com/glitchr-omnisense/omnitrade/blob/1.x/docs/policies.md).
+
 ## Errors
 
 Every failure is an `Omnitrade\Shopify\Api\ShopifyApiException`, a `ProviderException` whose

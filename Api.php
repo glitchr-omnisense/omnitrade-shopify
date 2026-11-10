@@ -2,6 +2,7 @@
 
 namespace Omnitrade\Shopify;
 
+use Omnisense\Contracts\Policy\Backoff;
 use Omnitrade\Shopify\Api\AdminApi;
 use Omnitrade\Shopify\Api\Endpoint;
 use Omnitrade\Shopify\Api\GraphQL;
@@ -20,8 +21,9 @@ final class Api
         public readonly array $draftOrderTags = [],
         ?LoggerInterface $logger = null,
         float $retryDelay = 1.0,
+        ?Backoff $backoff = null,
     ) {
-        $graphql = new GraphQL($http, $logger, null, $retryDelay);
+        $graphql = new GraphQL($http, $logger, null, $retryDelay, $backoff);
         $this->admin = new AdminApi($graphql, $endpoint);
     }
 }

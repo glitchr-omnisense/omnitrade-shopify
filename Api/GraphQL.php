@@ -2,7 +2,10 @@
 
 namespace Omnitrade\Shopify\Api;
 
+use Omnisense\Contracts\Policy\Backoff;
+use Omnitrade\Exception\RateLimitedException;
 use Omnitrade\Http\Redaction;
+use Omnitrade\Http\Throttle;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -13,7 +16,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * Knows nothing about orders or products: every document is passed in. It
  * knows two things about Shopify: the Admin API is a leaky bucket costed per
  * query (extensions.cost.throttleStatus), waited for when it runs low; and a
- * THROTTLED answer is retried with backoff. The access token never reaches a
+ * query answered THROTTLED, 429 or 5xx is retried with backoff. A mutation is
+ * never sent twice: a 5xx may come after it ran (a second draft order), and
+ * Shopify documents no idempotency for it; THROTTLED or 429, which Shopify
+ * answers before running it, is a RateLimitedException with the wait, the
+ * caller's to try again. Given the gateway's Backoff, no document is sent
+ * while a wait the shop asked for lasts. The access token never reaches a
  * log or an exception: not its message, its previous (a copy of the HTTP
  * client's, Redaction::copy()) nor its trace's arguments.
  */
@@ -32,6 +40,8 @@ class GraphQL
         ?callable $sleep = null,
         /** The first retry's wait in seconds, doubled at each attempt; a 429's Retry-After prevails. */
         private readonly float $retryDelay = 1.0,
+        /** The waits the shop asks for (omnisense/contracts' Backoff), shared by the gateway's calls */
+        private readonly ?Backoff $limits = null,
     ) {
         // Injected so a test can assert the wait instead of serving it.
         $this->sleep = $sleep ?? static function (float $seconds): void {
@@ -48,9 +58,11 @@ class GraphQL
      */
     public function query(string $url, array $headers, string $document, array $variables = [], int $timeout = 15): array
     {
+        $mutation = 1 === preg_match('~^\s*mutation\b~', $document);
         $attempt = 0;
         while (true) {
             ++$attempt;
+            Throttle::before($this->limits);
             $options = ['headers' => ['Content-Type' => 'application/json', 'Accept' => 'application/json'] + $headers, 'timeout' => $timeout];
             try {
                 $options['body'] = json_encode(['query' => $document, 'variables' => (object) $variables], \JSON_THROW_ON_ERROR);
@@ -62,7 +74,13 @@ class GraphQL
 
                 throw Redaction::withoutArguments(new ShopifyApiException('Shopify request failed: '.Redaction::text($e->getMessage(), $secrets), [], Redaction::copy($e, $secrets)));
             }
-            // 429 and 5xx are worth another go; 401/403/404 never are.
+            if ($mutation && 429 === $status) {
+                Throttle::after($this->limits, 'shopify', 429, $response->getHeaders(false), 'Shopify answered 429: the mutation was not run, nor sent again.');
+            }
+            if ($mutation && $status >= 500) {
+                throw Redaction::withoutArguments(new ShopifyApiException(sprintf('Shopify returned HTTP %d to a mutation: not sent again, it may have run.', $status)));
+            }
+            // A query's 429 and 5xx are worth another go; 401/403/404 never are.
             if (429 === $status || $status >= 500) {
                 if ($attempt < self::MAX_ATTEMPTS) {
                     $retryAfter = $response->getHeaders(false)['retry-after'][0] ?? null;
@@ -79,6 +97,10 @@ class GraphQL
                 throw Redaction::withoutArguments(new ShopifyApiException('Shopify returned a body that is not JSON.'));
             }
             if (!empty($payload['errors'])) {
+                if ($mutation && \is_array($payload['errors']) && $this->isThrottled($payload['errors'])) {
+                    // The requested cost exceeded what the bucket held: Shopify ran nothing.
+                    throw Redaction::withoutArguments(new RateLimitedException('shopify', 'Shopify throttled the mutation (THROTTLED): it was not run, nor sent again.', (int) ceil($this->backoff(1))));
+                }
                 if ($this->isThrottled($payload['errors']) && $attempt < self::MAX_ATTEMPTS) {
                     ($this->sleep)($this->backoff($attempt));
                     continue;

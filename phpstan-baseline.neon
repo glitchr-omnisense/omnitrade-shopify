@@ -1,0 +1,1471 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Cannot access offset ''endCursor'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Cannot access offset ''hasNextPage'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Cannot access offset ''nodes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Cannot access offset ''pageInfo'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Parameter \#1 \$node of static method Omnitrade\\Shopify\\Products\:\:stock\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Parameter \#1 \$node of static method Omnitrade\\Shopify\\Products\:\:stock\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchInventoryAction.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''address1'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''address2'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''amount'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''city'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''countryCodeV2'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''currencyCode'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''displayName'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''email'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''nodes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''originalUnitPriceSet'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''phone'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''quantity'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''shopMoney'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''sku'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''variant'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot access offset ''zip'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 8
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \#1 \$order of static method Omnitrade\\Shopify\\Action\\FetchOrderAction\:\:order\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \#4 \$sku of class Omnitrade\\Model\\Line constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$city of class Omnitrade\\Model\\Customer constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$country of class Omnitrade\\Model\\Customer constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$email of class Omnitrade\\Model\\Customer constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$fulfillmentStatus of class Omnitrade\\Model\\PlatformOrder constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$name of class Omnitrade\\Model\\Customer constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$number of class Omnitrade\\Model\\PlatformOrder constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$phone of class Omnitrade\\Model\\Customer constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$postalCode of class Omnitrade\\Model\\Customer constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$reference of class Omnitrade\\Model\\Line constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Parameter \$street of class Omnitrade\\Model\\Customer constructor expects list\<string\>, list\{0\?\: mixed, 1\?\: mixed\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchOrderAction.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Cannot access offset ''currencyCode'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Cannot access offset ''handle'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Cannot access offset ''nodes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Cannot access offset ''taxesIncluded'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Parameter \#1 \$node of static method Omnitrade\\Shopify\\Products\:\:fromGraphQL\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchProductAction.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''currencyCode'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''endCursor'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''hasNextPage'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''nodes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''pageInfo'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''taxesIncluded'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Parameter \#1 \$node of static method Omnitrade\\Shopify\\Products\:\:fromGraphQL\(\) expects array\<string, mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchProductsAction.php
+
+		-
+			message: '#^Cannot access offset ''displayFinancialStatus'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Cannot access offset ''invoiceUrl'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Cannot access offset ''order'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Parameter \$raw of class Omnitrade\\Model\\Transaction constructor expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Parameter \$redirectUrl of class Omnitrade\\Model\\Transaction constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/FetchTransactionAction.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Cannot access offset ''key'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Cannot access offset ''value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 10
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Parameter \#1 \$payload of static method Omnitrade\\Shopify\\Products\:\:fromRest\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Action\\NotifyAction\:\:\$shop \(array\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Action\\NotifyAction\:\:\$shop type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Action/NotifyAction.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Cannot access offset ''invoiceUrl'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Cannot access offset ''totalPrice'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Parameter \$message of class Omnitrade\\Model\\Transaction constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Action/PurchaseAction.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\AdminApi\:\:mutate\(\) has parameter \$variables with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/AdminApi.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\AdminApi\:\:mutate\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/AdminApi.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\AdminApi\:\:query\(\) has parameter \$variables with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/AdminApi.php
+
+		-
+			message: '#^Parameter \#2 \$result of method Omnitrade\\Shopify\\Api\\GraphQL\:\:assertNoUserErrors\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Api/AdminApi.php
+
+		-
+			message: '#^Parameter \#4 \$variables of method Omnitrade\\Shopify\\Api\\GraphQL\:\:query\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Api/AdminApi.php
+
+		-
+			message: '#^Cannot access offset ''code'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Cannot access offset ''cost'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Cannot access offset ''extensions'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Cannot access offset ''throttleStatus'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\GraphQL\:\:assertNoUserErrors\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\GraphQL\:\:assertNoUserErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\GraphQL\:\:isThrottled\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\GraphQL\:\:query\(\) has parameter \$headers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\GraphQL\:\:query\(\) should return array\<string, mixed\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\GraphQL\:\:respectBucket\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Parameter \#1 \$errors of method Omnitrade\\Shopify\\Api\\GraphQL\:\:isThrottled\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Parameter \#2 \$errors of static method Omnitrade\\Shopify\\Api\\ShopifyApiException\:\:fromErrors\(\) expects array\<array\{message\?\: string, field\?\: array\|null\}\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Api/GraphQL.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\ShopifyApiException\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/ShopifyApiException.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Api\\ShopifyApiException\:\:fromErrors\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Api/ShopifyApiException.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Api/ShopifyApiException.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 9
+			path: Products.php
+
+		-
+			message: '#^Binary operation "\+" between mixed and 1 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Binary operation "\." between mixed and ''\.'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''admin_graphql_api_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''alt'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''altText'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''availableForSale'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''barcode'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''compareAtPrice'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''height'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''image'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''inventoryItem'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''inventoryQuantity'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''key'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''measurement'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''namespace'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''nodes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''optionValues'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''position'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''price'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''selectedOptions'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''sku'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''src'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''tracked'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''url'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''values'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''weight'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset ''width'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Products.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 6
+			path: Products.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 37
+			path: Products.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Products\:\:media\(\) has parameter \$item with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Products\:\:onlyRealOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Products\:\:tags\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Products\:\:unique\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Products\:\:withoutDefault\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Products\:\:withoutDefault\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''strval'' given\.$#'
+			identifier: argument.type
+			count: 3
+			path: Products.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''trim'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(array\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \#1 \$item of static method Omnitrade\\Shopify\\Products\:\:media\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_key_exists expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \$options of class Omnitrade\\Model\\Product constructor expects list\<Omnitrade\\Model\\Option\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Parameter \$options of class Omnitrade\\Model\\ProductVariant constructor expects array\<string, string\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Parameter \$raw of class Omnitrade\\Model\\ProductVariant constructor expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \$reference of class Omnitrade\\Model\\Media constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Products.php
+
+		-
+			message: '#^Parameter \$tags of class Omnitrade\\Model\\Product constructor expects list\<string\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Products.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#1 \$currency of class Omnitrade\\Shopify\\Action\\FetchProductAction constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#1 \$currency of class Omnitrade\\Shopify\\Action\\FetchProductsAction constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#1 \$currency of class Omnitrade\\Shopify\\Action\\NotifyAction constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#1 \$shopDomain of class Omnitrade\\Shopify\\Api\\Endpoint constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#2 \$apiVersion of class Omnitrade\\Shopify\\Api\\Endpoint constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#3 \$adminToken of class Omnitrade\\Shopify\\Api\\Endpoint constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#3 \$draftOrderTags of class Omnitrade\\Shopify\\Api constructor expects array\<string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Parameter \#4 \$webhookSecret of class Omnitrade\\Shopify\\Api\\Endpoint constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ShopifyGatewayFactory.php
+
+		-
+			message: '#^Cannot access offset ''after'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''ids'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''inventoryItem'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''inventory_management'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''nodes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''query'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''tracked'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''variables'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$amount on Omnitrade\\Model\\Money\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$available on Omnitrade\\Model\\Offer\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$compareAt on Omnitrade\\Model\\Offer\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$currency on Omnitrade\\Model\\Money\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$item on Omnitrade\\Model\\Stock\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$price on Omnitrade\\Model\\Offer\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$quantity on Omnitrade\\Model\\Stock\|null\.$#'
+			identifier: property.nonObject
+			count: 5
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$reference on Omnitrade\\Model\\Product\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$tags on Omnitrade\\Model\\Product\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$taxIncluded on Omnitrade\\Model\\Offer\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$title on Omnitrade\\Model\\Product\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$tracked on Omnitrade\\Model\\Stock\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$url on Omnitrade\\Model\\Media\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access property \$url on Omnitrade\\Model\\Offer\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot call method available\(\) on Omnitrade\\Model\\Stock\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot call method price\(\) on Omnitrade\\Model\\Product\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Tests\\ShopifyCatalogueTest\:\:fixture\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Tests\\ShopifyCatalogueTest\:\:fixture\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Tests\\ShopifyCatalogueTest\:\:gateway\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$body of class Symfony\\Component\\HttpClient\\Response\\MockResponse constructor expects iterable\<string\|Throwable\>\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, Closure\(string\)\: \(array\{id\: ''gid\://shopify/ProductVariant/73'', sku\: ''GIFT'', inventoryQuantity\: \-3, inventoryItem\: array\{id\: ''gid\://shopify/InventoryItem/83'', tracked\: false\}\}\|array\{id\: ''gid\://shopify/ProductVariant/72'', sku\: ''MGX18'', inventoryQuantity\: 12, inventoryItem\: array\{id\: ''gid\://shopify/InventoryItem/82'', tracked\: true\}\}\|null\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_contains expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 5
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$node of static method Omnitrade\\Shopify\\Products\:\:fromGraphQL\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Omnitrade\\GatewayFactory\:\:create\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#1 \$payload of static method Omnitrade\\Shopify\\Products\:\:fromRest\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of function array_map expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Tests\\ShopifyCatalogueTest\:\:\$queries \(list\<array\{query\: string, variables\: array\}\>\) does not accept non\-empty\-list\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Tests\\ShopifyCatalogueTest\:\:\$queries type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Tests/ShopifyCatalogueTest.php
+
+		-
+			message: '#^Cannot access offset ''query'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Tests\\ShopifyContractTest\:\:recordedAnswers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Tests\\ShopifyContractTest\:\:signedNotification\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Method Omnitrade\\Shopify\\Tests\\ShopifyContractTest\:\:signedNotification\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Parameter \#1 \$body of class Symfony\\Component\\HttpClient\\Response\\MockResponse constructor expects iterable\<string\|Throwable\>\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_contains expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 6
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Parameter \#1 \$payload of static method Omnitrade\\Shopify\\Api\\Hmac\:\:sign\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyContractTest.php
+
+		-
+			message: '#^Cannot access offset ''amount'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''customAttributes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''email'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''lineItems'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''originalUnitPriceWithCurrency'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''priceWithCurrency'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''query'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''shippingLine'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''tags'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''variables'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset ''variantId'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access property \$country on Omnitrade\\Model\\Customer\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Cannot access property \$name on Omnitrade\\Model\\Customer\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Parameter \#1 \$body of class Symfony\\Component\\HttpClient\\Response\\MockResponse constructor expects iterable\<string\|Throwable\>\|string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Parameter \#1 \$body of method Omnitrade\\GatewayInterface\:\:notify\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_contains expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Parameter \#1 \$payload of static method Omnitrade\\Shopify\\Api\\Hmac\:\:sign\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of static method PHPUnit\\Framework\\Assert\:\:assertContains\(\) expects iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Tests\\ShopifyGatewayTest\:\:\$queries \(list\<array\{query\: string, variables\: array\}\>\) does not accept non\-empty\-list\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Tests\\ShopifyGatewayTest\:\:\$queries type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: Tests/ShopifyGatewayTest.php
+
+		-
+			message: '#^Binary operation "\." between ''gid\://shopify/Order/'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: Tests/ShopifyTagsTest.php
+
+		-
+			message: '#^Binary operation "\." between ''wh\-'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: Tests/ShopifyTagsTest.php
+
+		-
+			message: '#^Cannot access offset ''customAttributes'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyTagsTest.php
+
+		-
+			message: '#^Cannot access offset ''input'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyTagsTest.php
+
+		-
+			message: '#^Cannot access offset ''tags'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: Tests/ShopifyTagsTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: Tests/ShopifyTagsTest.php
+
+		-
+			message: '#^Property Omnitrade\\Shopify\\Tests\\ShopifyTagsTest\:\:\$queries \(list\<array\<string, mixed\>\>\) does not accept non\-empty\-list\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: Tests/ShopifyTagsTest.php

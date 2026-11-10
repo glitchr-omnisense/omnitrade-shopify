@@ -2,17 +2,47 @@
     "name": "omnitrade/shopify",
     "type": "library",
     "description": "Omnitrade Shopify: a sale paid on the shop's invoice page (draft orders), the shop's orders, its catalogue (products, variants, inventory) and its webhooks, over the Admin GraphQL API.",
-    "keywords": ["shopify", "commerce", "omnitrade"],
+    "keywords": [
+        "shopify",
+        "commerce",
+        "omnitrade"
+    ],
     "license": "MIT",
-    "authors": [{"name": "Marco Meyer", "email": "marco.meyer@glitchr.io"}],
+    "authors": [
+        {
+            "name": "Marco Meyer",
+            "email": "marco.meyer@glitchr.io"
+        }
+    ],
     "require": {
         "php": ">=8.2",
+        "omnisense/contracts": "^1.0@dev",
         "omnisense/omnitrade": "^1.0@dev",
         "psr/log": "^1.1|^2.0|^3.0",
         "symfony/http-client": "^6.4|^7.0|^8.0"
     },
-    "require-dev": {"phpunit/phpunit": "^11.0"},
-    "autoload": {"psr-4": {"Omnitrade\\Shopify\\": ""}, "exclude-from-classmap": ["/Tests/"]},
-    "autoload-dev": {"psr-4": {"Omnitrade\\Shopify\\Tests\\": "Tests/"}},
-    "config": {"sort-packages": true}
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnitrade\\Shopify\\": ""
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Omnitrade\\Shopify\\Tests\\": "Tests/"
+        }
+    },
+    "extra": {
+        "omnisense": {
+            "policy": "policy.json"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
 }
