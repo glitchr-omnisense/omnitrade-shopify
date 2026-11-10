@@ -5,10 +5,13 @@ namespace Omnitrade\Shopify\Action;
 use Omnitrade\Action\ActionInterface;
 use Omnitrade\Action\ApiAwareInterface;
 use Omnitrade\Action\ApiAwareTrait;
+use Omnitrade\Action\TagsAwareInterface;
+use Omnitrade\Action\TagsAwareTrait;
 use Omnitrade\Exception\ProviderException;
 use Omnitrade\Model\Money;
 use Omnitrade\Model\Payment;
 use Omnitrade\Model\Status;
+use Omnitrade\Model\Tags;
 use Omnitrade\Model\Transaction;
 use Omnitrade\Request\Purchase;
 use Omnitrade\Request\Request;
@@ -23,11 +26,17 @@ use Omnitrade\Shopify\Documents;
  * Shopify counts its stock; any other is a custom line. The shipping and the
  * discount are carried over whole. Shopify's checkout never redirects back:
  * returnUrl is not used.
+ *
+ * The gateway's tags (the "tags" option) go with the payment's metadata into
+ * the custom attributes (the order's note_attributes, the payment's metadata
+ * winning but for "site"), and its site is a tag of the draft order too
+ * ("site:solstay"), which the order keeps: the admin filters on it.
  */
-final class PurchaseAction implements ActionInterface, ApiAwareInterface
+final class PurchaseAction implements ActionInterface, ApiAwareInterface, TagsAwareInterface
 {
     /** @use ApiAwareTrait<Api> */
     use ApiAwareTrait;
+    use TagsAwareTrait;
 
     public function __construct()
     {
@@ -43,7 +52,7 @@ final class PurchaseAction implements ActionInterface, ApiAwareInterface
     {
         \assert($request instanceof Purchase);
         $payment = $request->payment;
-        $result = $this->api->admin->mutate(Documents::DRAFT_ORDER_CREATE, ['input' => self::input($payment, $this->api->draftOrderTags)], 'draftOrderCreate');
+        $result = $this->api->admin->mutate(Documents::DRAFT_ORDER_CREATE, ['input' => self::input($payment, $this->api->draftOrderTags, $this->tags())], 'draftOrderCreate');
         $draft = $result['draftOrder'] ?? [];
         if (empty($draft['id']) || empty($draft['invoiceUrl'])) {
             throw new ProviderException('shopify', 'Shopify created no draft order with an invoice URL.');
@@ -66,7 +75,7 @@ final class PurchaseAction implements ActionInterface, ApiAwareInterface
      *
      * @return array<string, mixed> a DraftOrderInput
      */
-    public static function input(Payment $payment, array $tags = []): array
+    public static function input(Payment $payment, array $tags = [], ?Tags $labels = null): array
     {
         $currency = $payment->amount->currency;
         $lineItems = [];
@@ -101,8 +110,11 @@ final class PurchaseAction implements ActionInterface, ApiAwareInterface
             'customAttributes' => [['key' => Documents::REFERENCE_KEY, 'value' => $payment->reference]],
             'presentmentCurrencyCode' => $currency,
         ];
-        foreach ($payment->metadata as $key => $value) {
-            $input['customAttributes'][] = ['key' => (string) $key, 'value' => (string) $value];
+        foreach (($labels ?? new Tags())->merge($payment->metadata) as $key => $value) {
+            $input['customAttributes'][] = ['key' => $key, 'value' => $value];
+        }
+        if (null !== $site = $labels?->site()) {
+            $tags = array_values(array_unique([...$tags, Tags::SITE.':'.$site]));
         }
         if ($tags) {
             $input['tags'] = $tags;

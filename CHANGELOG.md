@@ -2,6 +2,13 @@
 
 ## Unreleased (1.x)
 
+### Added
+- The gateway's `tags` option (omnisense/omnitrade): the draft order's custom attributes (the order's
+  `note_attributes`, under the payment's metadata, `site` the configuration's) and a `site:<name>`
+  tag beside `draft_order_tags`; `notify()` gives them back from an order's `note_attributes`, else
+  its `site:` tag (`Notification::$tags`). Not on `refunds/create` (its payload has neither). Tests on
+  recorded requests (`ShopifyTagsTest`).
+
 ### Removed
 - The `storefront_token` option, which no action read: the factory built a Storefront API client
   with it and nothing called it. This is the provider's public API: an application that passes

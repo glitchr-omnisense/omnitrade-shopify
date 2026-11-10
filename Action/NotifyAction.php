@@ -10,6 +10,7 @@ use Omnitrade\Exception\ProviderException;
 use Omnitrade\Model\Notification;
 use Omnitrade\Model\Status;
 use Omnitrade\Model\Stock;
+use Omnitrade\Model\Tags;
 use Omnitrade\Request\Notify;
 use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
@@ -89,9 +90,21 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
             $reference = (string) $payload['admin_graphql_api_id'];
         }
         $merchantReference = null;
+        $tags = [];
         foreach ($payload['note_attributes'] ?? [] as $attribute) {
-            if (Documents::REFERENCE_KEY === ($attribute['name'] ?? $attribute['key'] ?? null)) {
+            $name = $attribute['name'] ?? $attribute['key'] ?? null;
+            if (Documents::REFERENCE_KEY === $name) {
                 $merchantReference = (string) ($attribute['value'] ?? '') ?: null;
+            } elseif (\is_string($name) && '' !== $name && \is_scalar($attribute['value'] ?? null)) {
+                $tags[$name] = (string) $attribute['value'];
+            }
+        }
+        // The draft order's "site:..." tag, which the order keeps, when no attribute says it.
+        if (!isset($tags[Tags::SITE]) && str_starts_with($topic, 'orders/') && \is_string($payload['tags'] ?? null)) {
+            foreach (explode(',', $payload['tags']) as $tag) {
+                if (str_starts_with($tag = trim($tag), Tags::SITE.':') && '' !== $site = substr($tag, \strlen(Tags::SITE) + 1)) {
+                    $tags[Tags::SITE] = $site;
+                }
             }
         }
 
@@ -119,6 +132,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
             raw: ['topic' => $topic, 'shop' => $shop, 'merchant_reference' => $merchantReference, 'order' => $payload['admin_graphql_api_id'] ?? null, 'payload' => $payload],
             product: $product,
             stocks: $stocks,
+            tags: $tags,
         ));
     }
 

@@ -149,6 +149,14 @@ with the same id).
 `omnitrade_reference`), the order's gid and the payload. The catalogue's webhooks:
 [Shopify's catalogue](catalogue.md#shopifys-catalogue).
 
+## Tags
+
+The `tags` option goes into the draft order's custom attributes (the order's `note_attributes`),
+under the payment's metadata, with `site` the configuration's. `site` is also a tag,
+`site:<name>`, beside `draft_order_tags`. `notify()` gives them back from an order's
+`note_attributes`, else from its `site:` tag (`Notification::$tags`). `refunds/create` carries
+neither. See omnisense/omnitrade's [Several sites in one sandbox](https://github.com/glitchr-omnisense/omnitrade/blob/1.x/docs/several-sites.md).
+
 ## Example
 
 ```php
