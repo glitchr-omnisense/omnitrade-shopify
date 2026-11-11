@@ -36,72 +36,73 @@ final class Products
      */
     public static function fromGraphQL(array $node, string $currency, ?bool $taxIncluded = null): Product
     {
+        $read = Data::of($node);
         $url = self::blankToNull($node['onlineStoreUrl'] ?? null);
-        $nodes = $node['variants']['nodes'] ?? [];
+        $nodes = $read->each('variants.nodes');
         $variants = [];
         foreach ($nodes as $variant) {
-            $tracked = (bool) ($variant['inventoryItem']['tracked'] ?? false);
-            $reference = (string) ($variant['id'] ?? '');
+            $tracked = (bool) ($variant->get('inventoryItem.tracked') ?? false);
+            $reference = $variant->text('id');
             $options = [];
-            foreach ($variant['selectedOptions'] ?? [] as $selected) {
-                if (isset($selected['name'])) {
-                    $options[(string) $selected['name']] = (string) ($selected['value'] ?? '');
+            foreach ($variant->each('selectedOptions') as $selected) {
+                if ($selected->has('name')) {
+                    $options[$selected->text('name')] = $selected->text('value');
                 }
             }
-            $weight = $variant['inventoryItem']['measurement']['weight'] ?? null;
-            $image = \is_array($variant['image'] ?? null) && !empty($variant['image']['url'])
-                ? new Media((string) $variant['image']['url'], self::blankToNull($variant['image']['altText'] ?? null), Media::IMAGE, self::int($variant['image']['width'] ?? null), self::int($variant['image']['height'] ?? null))
+            $weight = $variant->get('inventoryItem.measurement.weight');
+            $image = \is_array($variant->get('image')) && !empty($variant->get('image.url'))
+                ? new Media($variant->text('image.url'), self::blankToNull($variant->get('image.altText')), Media::IMAGE, self::int($variant->get('image.width')), self::int($variant->get('image.height')))
                 : null;
 
             $variants[] = new ProductVariant(
                 reference: $reference,
-                title: self::variantTitle($variant['title'] ?? null),
-                sku: self::blankToNull($variant['sku'] ?? null),
-                barcode: self::blankToNull($variant['barcode'] ?? null),
-                offers: self::offers($variant['price'] ?? null, $variant['compareAtPrice'] ?? null, $currency, (bool) ($variant['availableForSale'] ?? false), self::variantUrl($url, $reference, \count($nodes)), $taxIncluded),
+                title: self::variantTitle($variant->get('title')),
+                sku: self::blankToNull($variant->get('sku')),
+                barcode: self::blankToNull($variant->get('barcode')),
+                offers: self::offers($variant->get('price'), $variant->get('compareAtPrice'), $currency, (bool) ($variant->get('availableForSale') ?? false), self::variantUrl($url, $reference, \count($nodes)), $taxIncluded),
                 options: self::withoutDefault($options),
                 // Untracked inventory is "as many as you like": a null quantity.
-                stock: new Stock($reference, $tracked ? (int) ($variant['inventoryQuantity'] ?? 0) : null, $tracked, self::blankToNull($variant['sku'] ?? null), item: self::blankToNull($variant['inventoryItem']['id'] ?? null)),
+                stock: new Stock($reference, $tracked ? $variant->number('inventoryQuantity') : null, $tracked, self::blankToNull($variant->get('sku')), item: self::blankToNull($variant->get('inventoryItem.id'))),
                 image: $image,
-                weight: \is_array($weight) ? self::grams($weight['value'] ?? null, (string) ($weight['unit'] ?? 'GRAMS')) : null,
-                raw: $variant,
+                weight: \is_array($weight) ? self::grams($weight['value'] ?? null, Data::cast($weight['unit'] ?? 'GRAMS')) : null,
+                raw: $variant->toArray(),
             );
         }
 
         $options = [];
-        foreach ($node['options'] ?? [] as $option) {
-            $values = isset($option['optionValues'])
-                ? array_map(static fn (array $v) => (string) ($v['name'] ?? ''), $option['optionValues'])
-                : array_map('strval', (array) ($option['values'] ?? []));
-            $options[] = new Option((string) ($option['name'] ?? ''), array_values(array_filter($values, static fn (string $v) => '' !== $v)));
+        foreach ($read->each('options') as $option) {
+            $values = $option->has('optionValues')
+                ? array_map(static fn (Data $v) => $v->text('name'), $option->each('optionValues'))
+                : Data::texts($option->get('values') ?? []);
+            $options[] = new Option($option->text('name'), array_values(array_filter($values, static fn (string $v) => '' !== $v)));
         }
 
-        $categories = [(string) ($node['productType'] ?? '')];
-        foreach ($node['collections']['nodes'] ?? [] as $collection) {
-            $categories[] = (string) ($collection['title'] ?? '');
+        $categories = [$read->text('productType')];
+        foreach ($read->each('collections.nodes') as $collection) {
+            $categories[] = $collection->text('title');
         }
 
         $attributes = [];
-        foreach ($node['metafields']['nodes'] ?? [] as $metafield) {
-            if (isset($metafield['namespace'], $metafield['key'])) {
-                $attributes[$metafield['namespace'].'.'.$metafield['key']] = (string) ($metafield['value'] ?? '');
+        foreach ($read->each('metafields.nodes') as $metafield) {
+            if ($metafield->has('namespace') && $metafield->has('key')) {
+                $attributes[$metafield->text('namespace').'.'.$metafield->text('key')] = $metafield->text('value');
             }
         }
 
         $media = [];
-        foreach ($node['media']['nodes'] ?? [] as $item) {
+        foreach ($read->each('media.nodes') as $item) {
             if (null !== $m = self::media($item)) {
                 $media[] = $m;
             }
         }
-        if (!$media && isset($node['featuredMedia']['image']['url'])) {
-            $media[] = new Media((string) $node['featuredMedia']['image']['url'], self::blankToNull($node['featuredMedia']['image']['altText'] ?? null), reference: $node['featuredMedia']['id'] ?? null);
+        if (!$media && $read->has('featuredMedia.image.url')) {
+            $media[] = new Media($read->text('featuredMedia.image.url'), self::blankToNull($read->get('featuredMedia.image.altText')), reference: Data::castOrNull($read->get('featuredMedia.id')));
         }
 
         return new Product(
             provider: 'shopify',
-            reference: (string) ($node['id'] ?? ''),
-            title: (string) ($node['title'] ?? ''),
+            reference: $read->text('id'),
+            title: $read->text('title'),
             description: self::blankToNull($node['descriptionHtml'] ?? null),
             handle: self::blankToNull($node['handle'] ?? null),
             brand: self::blankToNull($node['vendor'] ?? null),
@@ -123,78 +124,79 @@ final class Products
      */
     public static function fromRest(array $payload, string $currency, ?bool $taxIncluded = null): Product
     {
+        $read = Data::of($payload);
         $status = self::status($payload['status'] ?? null);
         $optionNames = [];
         $options = [];
-        foreach ($payload['options'] ?? [] as $i => $option) {
-            $position = (int) ($option['position'] ?? $i + 1);
-            $optionNames[$position] = (string) ($option['name'] ?? '');
-            $options[] = new Option((string) ($option['name'] ?? ''), array_values(array_map('strval', (array) ($option['values'] ?? []))));
+        foreach ($read->each('options') as $i => $option) {
+            $position = Data::integer($option->get('position') ?? $i + 1);
+            $optionNames[$position] = $option->text('name');
+            $options[] = new Option($option->text('name'), Data::texts($option->get('values') ?? []));
         }
 
         $imagesById = [];
         $media = [];
-        foreach ($payload['images'] ?? [] as $image) {
-            if (empty($image['src'])) {
+        foreach ($read->each('images') as $image) {
+            if (empty($image->get('src'))) {
                 continue;
             }
-            $m = new Media((string) $image['src'], self::blankToNull($image['alt'] ?? null), Media::IMAGE, self::int($image['width'] ?? null), self::int($image['height'] ?? null), isset($image['admin_graphql_api_id']) ? (string) $image['admin_graphql_api_id'] : (isset($image['id']) ? (string) $image['id'] : null));
+            $m = new Media($image->text('src'), self::blankToNull($image->get('alt')), Media::IMAGE, self::int($image->get('width')), self::int($image->get('height')), $image->has('admin_graphql_api_id') ? $image->text('admin_graphql_api_id') : $image->textOrNull('id'));
             $media[] = $m;
-            if (isset($image['id'])) {
-                $imagesById[(string) $image['id']] = $m;
+            if ($image->has('id')) {
+                $imagesById[$image->text('id')] = $m;
             }
         }
-        if (!$media && !empty($payload['image']['src'])) {
-            $media[] = new Media((string) $payload['image']['src'], self::blankToNull($payload['image']['alt'] ?? null));
+        if (!$media && !empty($read->get('image.src'))) {
+            $media[] = new Media($read->text('image.src'), self::blankToNull($read->get('image.alt')));
         }
 
         $variants = [];
-        $count = \count($payload['variants'] ?? []);
-        foreach ($payload['variants'] ?? [] as $variant) {
+        foreach ($read->each('variants') as $variant) {
+            $fields = $variant->toArray();
             // Older payloads say inventory_management ("shopify" or null);
             // a payload without it counts when it gives a quantity.
-            $tracked = \array_key_exists('inventory_management', $variant)
-                ? null !== $variant['inventory_management'] && '' !== $variant['inventory_management']
-                : (isset($variant['inventory_item']['tracked']) ? (bool) $variant['inventory_item']['tracked'] : \array_key_exists('inventory_quantity', $variant));
-            $quantity = (int) ($variant['inventory_quantity'] ?? 0);
-            $reference = self::gid('ProductVariant', $variant['admin_graphql_api_id'] ?? $variant['id'] ?? null);
+            $tracked = \array_key_exists('inventory_management', $fields)
+                ? null !== $fields['inventory_management'] && '' !== $fields['inventory_management']
+                : ($variant->has('inventory_item.tracked') ? (bool) $variant->get('inventory_item.tracked') : \array_key_exists('inventory_quantity', $fields));
+            $quantity = $variant->number('inventory_quantity');
+            $reference = self::gid('ProductVariant', $variant->get('admin_graphql_api_id') ?? $variant->get('id'));
             $values = [];
             foreach ($optionNames as $position => $name) {
-                $value = $variant['option'.$position] ?? null;
+                $value = $variant->get('option'.$position);
                 if (null !== $value && '' !== $name) {
-                    $values[$name] = (string) $value;
+                    $values[$name] = Data::cast($value);
                 }
             }
-            $item = isset($variant['inventory_item_id']) ? self::gid('InventoryItem', $variant['inventory_item_id']) : null;
+            $item = $variant->has('inventory_item_id') ? self::gid('InventoryItem', $variant->get('inventory_item_id')) : null;
             // The REST shape has no per-variant availability flag: for sale
             // when the product is active and it has stock, does not count
             // it, or sells on when it is out.
-            $available = Product::ACTIVE === $status && (!$tracked || $quantity > 0 || 'continue' === ($variant['inventory_policy'] ?? null));
+            $available = Product::ACTIVE === $status && (!$tracked || $quantity > 0 || 'continue' === $variant->get('inventory_policy'));
 
             $variants[] = new ProductVariant(
                 reference: $reference,
-                title: self::variantTitle($variant['title'] ?? null),
-                sku: self::blankToNull($variant['sku'] ?? null),
-                barcode: self::blankToNull($variant['barcode'] ?? null),
-                offers: self::offers($variant['price'] ?? null, $variant['compare_at_price'] ?? null, $currency, $available, null, $taxIncluded),
+                title: self::variantTitle($variant->get('title')),
+                sku: self::blankToNull($variant->get('sku')),
+                barcode: self::blankToNull($variant->get('barcode')),
+                offers: self::offers($variant->get('price'), $variant->get('compare_at_price'), $currency, $available, null, $taxIncluded),
                 options: self::withoutDefault($values),
-                stock: new Stock($reference, $tracked ? $quantity : null, $tracked, self::blankToNull($variant['sku'] ?? null), item: $item),
-                image: isset($variant['image_id']) ? ($imagesById[(string) $variant['image_id']] ?? null) : null,
-                weight: isset($variant['grams']) ? (int) $variant['grams'] : (isset($variant['weight']) ? self::grams($variant['weight'], (string) ($variant['weight_unit'] ?? 'g')) : null),
-                raw: $variant,
+                stock: new Stock($reference, $tracked ? $quantity : null, $tracked, self::blankToNull($variant->get('sku')), item: $item),
+                image: $variant->has('image_id') ? ($imagesById[$variant->text('image_id')] ?? null) : null,
+                weight: $variant->has('grams') ? $variant->number('grams') : ($variant->has('weight') ? self::grams($variant->get('weight'), Data::cast($variant->get('weight_unit') ?? 'g')) : null),
+                raw: $fields,
             );
         }
 
         return new Product(
             provider: 'shopify',
-            reference: self::gid('Product', $payload['admin_graphql_api_id'] ?? $payload['id'] ?? null),
-            title: (string) ($payload['title'] ?? ''),
+            reference: self::gid('Product', $read->get('admin_graphql_api_id') ?? $read->get('id')),
+            title: $read->text('title'),
             description: self::blankToNull($payload['body_html'] ?? null),
             handle: self::blankToNull($payload['handle'] ?? null),
             brand: self::blankToNull($payload['vendor'] ?? null),
             status: $status,
             tags: self::tags($payload['tags'] ?? []),
-            categories: self::unique([(string) ($payload['product_type'] ?? '')]),
+            categories: self::unique([$read->text('product_type')]),
             options: self::onlyRealOptions($options),
             variants: $variants,
             media: $media,
@@ -210,21 +212,22 @@ final class Products
      */
     public static function stock(array $node): Stock
     {
-        $tracked = (bool) ($node['inventoryItem']['tracked'] ?? false);
+        $read = Data::of($node);
+        $tracked = (bool) ($read->get('inventoryItem.tracked') ?? false);
 
         return new Stock(
-            (string) $node['id'],
-            $tracked ? (int) ($node['inventoryQuantity'] ?? 0) : null,
+            $read->text('id'),
+            $tracked ? $read->number('inventoryQuantity') : null,
             $tracked,
             self::blankToNull($node['sku'] ?? null),
-            item: self::blankToNull($node['inventoryItem']['id'] ?? null),
+            item: self::blankToNull($read->get('inventoryItem.id')),
         );
     }
 
     /** "ACTIVE", "active" -> Product::ACTIVE; DRAFT, UNLISTED -> DRAFT; ARCHIVED. */
     public static function status(mixed $status): string
     {
-        return match (strtoupper((string) $status)) {
+        return match (strtoupper(Data::cast($status))) {
             'ARCHIVED' => Product::ARCHIVED,
             'DRAFT', 'UNLISTED' => Product::DRAFT,
             default => Product::ACTIVE,
@@ -237,8 +240,8 @@ final class Products
         if (null === $price || '' === $price) {
             return [];
         }
-        $price = Money::fromDecimal((string) $price, $currency);
-        $compareAt = null === $compareAt || '' === $compareAt ? null : Money::fromDecimal((string) $compareAt, $currency);
+        $price = Money::fromDecimal(Data::cast($price), $currency);
+        $compareAt = null === $compareAt || '' === $compareAt ? null : Money::fromDecimal(Data::cast($compareAt), $currency);
         if (null !== $compareAt && $compareAt->amount <= $price->amount) {
             $compareAt = null;
         }
@@ -246,19 +249,19 @@ final class Products
         return [new Offer($price, $compareAt, $available, $url, taxIncluded: $taxIncluded)];
     }
 
-    private static function media(array $item): ?Media
+    private static function media(Data $item): ?Media
     {
-        $type = strtoupper((string) ($item['mediaContentType'] ?? 'IMAGE'));
-        $reference = self::blankToNull($item['id'] ?? null);
-        $alt = self::blankToNull($item['alt'] ?? null);
-        if ('IMAGE' === $type && !empty($item['image']['url'])) {
-            return new Media((string) $item['image']['url'], $alt, Media::IMAGE, self::int($item['image']['width'] ?? null), self::int($item['image']['height'] ?? null), $reference);
+        $type = strtoupper(Data::cast($item->get('mediaContentType') ?? 'IMAGE'));
+        $reference = self::blankToNull($item->get('id'));
+        $alt = self::blankToNull($item->get('alt'));
+        if ('IMAGE' === $type && !empty($item->get('image.url'))) {
+            return new Media($item->text('image.url'), $alt, Media::IMAGE, self::int($item->get('image.width')), self::int($item->get('image.height')), $reference);
         }
-        if ('VIDEO' === $type && !empty($item['sources'][0]['url'])) {
-            return new Media((string) $item['sources'][0]['url'], $alt, Media::VIDEO, self::int($item['sources'][0]['width'] ?? null), self::int($item['sources'][0]['height'] ?? null), $reference);
+        if ('VIDEO' === $type && !empty($item->get('sources.0.url'))) {
+            return new Media($item->text('sources.0.url'), $alt, Media::VIDEO, self::int($item->get('sources.0.width')), self::int($item->get('sources.0.height')), $reference);
         }
-        if ('EXTERNAL_VIDEO' === $type && !empty($item['originUrl'])) {
-            return new Media((string) $item['originUrl'], $alt, Media::VIDEO, reference: $reference);
+        if ('EXTERNAL_VIDEO' === $type && !empty($item->get('originUrl'))) {
+            return new Media($item->text('originUrl'), $alt, Media::VIDEO, reference: $reference);
         }
 
         return null; // a 3D model: not a picture
@@ -281,37 +284,55 @@ final class Products
      */
     private static function variantTitle(mixed $title): ?string
     {
-        $title = trim((string) $title);
+        $title = trim(Data::cast($title));
 
         return ('' === $title || 'Default Title' === $title) ? null : $title;
     }
 
-    /** A product without options has one, "Title: Default Title": not one. */
+    /**
+     * A product without options has one, "Title: Default Title": not one.
+     *
+     * @param array<string, string> $options
+     *
+     * @return array<string, string>
+     */
     private static function withoutDefault(array $options): array
     {
         return ['Title' => 'Default Title'] === $options ? [] : $options;
     }
 
-    /** @param list<Option> $options */
+    /**
+     * @param list<Option> $options
+     *
+     * @return list<Option>
+     */
     private static function onlyRealOptions(array $options): array
     {
         return array_values(array_filter($options, static fn (Option $o) => !('Title' === $o->name && ['Default Title'] === $o->values)));
     }
 
-    /** GraphQL gives an array of tags, REST a comma-separated string. */
+    /**
+     * GraphQL gives an array of tags, REST a comma-separated string.
+     *
+     * @return list<string>
+     */
     private static function tags(mixed $tags): array
     {
         if (\is_string($tags)) {
             $tags = explode(',', $tags);
         }
 
-        return self::unique(array_map('strval', (array) $tags));
+        return self::unique(Data::texts($tags));
     }
 
-    /** @return list<string> trimmed, without blanks and repeats */
+    /**
+     * @param array<string> $values
+     *
+     * @return list<string> trimmed, without blanks and repeats
+     */
     private static function unique(array $values): array
     {
-        return array_values(array_unique(array_filter(array_map('trim', $values), static fn (string $v) => '' !== $v)));
+        return array_values(array_unique(array_filter(array_map(static fn (string $v) => trim($v), $values), static fn (string $v) => '' !== $v)));
     }
 
     private static function grams(mixed $value, string $unit): ?int
@@ -320,7 +341,7 @@ final class Products
             return null;
         }
 
-        return (int) round((float) $value * match (strtolower($unit)) {
+        return (int) round(Data::decimal($value) * match (strtolower($unit)) {
             'kilograms', 'kg' => 1000,
             'ounces', 'oz' => 28.349523125,
             'pounds', 'lb' => 453.59237,
@@ -330,7 +351,7 @@ final class Products
 
     private static function gid(string $type, mixed $id): string
     {
-        return null === $id || '' === $id ? '' : Endpoint::gid($type, (string) $id);
+        return null === $id || '' === $id ? '' : Endpoint::gid($type, Data::cast($id));
     }
 
     private static function date(mixed $value): ?\DateTimeImmutable
@@ -339,7 +360,7 @@ final class Products
             return null;
         }
         try {
-            return new \DateTimeImmutable((string) $value);
+            return new \DateTimeImmutable(Data::cast($value));
         } catch (\Exception) {
             return null;
         }
@@ -347,12 +368,12 @@ final class Products
 
     private static function int(mixed $value): ?int
     {
-        return null === $value || '' === $value ? null : (int) $value;
+        return null === $value || '' === $value ? null : Data::integer($value);
     }
 
     private static function blankToNull(mixed $value): ?string
     {
-        $value = null === $value ? '' : trim((string) $value);
+        $value = trim(Data::cast($value));
 
         return '' === $value ? null : $value;
     }

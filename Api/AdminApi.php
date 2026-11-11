@@ -22,6 +22,8 @@ class AdminApi
     }
 
     /**
+     * @param array<string, mixed> $variables
+     *
      * @return array<string, mixed>
      *
      * @throws ShopifyApiException
@@ -41,11 +43,17 @@ class AdminApi
         );
     }
 
-    /** A mutation, with its userErrors raised rather than returned. */
+    /**
+     * A mutation, with its userErrors raised rather than returned.
+     *
+     * @param array<string, mixed> $variables
+     *
+     * @return array<mixed>
+     */
     public function mutate(string $document, array $variables, string $root): array
     {
         $data = $this->query($document, $variables);
 
-        return $this->graphql->assertNoUserErrors($root, $data[$root] ?? []);
+        return $this->graphql->assertNoUserErrors($root, (array) ($data[$root] ?? []));
     }
 }

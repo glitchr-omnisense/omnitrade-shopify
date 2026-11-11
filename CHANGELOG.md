@@ -12,6 +12,12 @@
   its `site:` tag (`Notification::$tags`). Not on `refunds/create` (its payload has neither). Tests on
   recorded requests (`ShopifyTagsTest`).
 
+### Changed
+- PHPStan at level max with an empty baseline (408 errors that predated it): Shopify's answers read
+  through `Data` (internal: omnisense/contracts' `Http\Data` with reads that keep PHP's `(string)` and
+  `(int)` of a scalar), the arrays typed; `ShopifyApiException::fromErrors()` takes `array<mixed>`.
+  Types only: no signature changed, no behaviour either.
+
 ### Fixed
 - A GraphQL answer whose `errors` is one message rather than a list (the shape of Shopify's REST
   errors, `{"errors": "[API] Invalid API key or access token ..."}`) is a `ShopifyApiException` with

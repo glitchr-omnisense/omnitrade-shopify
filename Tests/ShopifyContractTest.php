@@ -4,6 +4,7 @@ namespace Omnitrade\Shopify\Tests;
 
 use Omnitrade\GatewayFactoryInterface;
 use Omnitrade\Shopify\Api\Hmac;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\ShopifyGatewayFactory;
 use Omnitrade\Testing\GatewayContractTests;
 use PHPUnit\Framework\TestCase;
@@ -37,6 +38,7 @@ final class ShopifyContractTest extends TestCase
         return 'gid://shopify/Product/9001';
     }
 
+    /** @return array<string, array<mixed>|MockResponse|callable> */
     protected function recordedAnswers(): array
     {
         $wine = json_decode((string) file_get_contents(__DIR__.'/Fixtures/products.wine.graphql.json'), true, 512, \JSON_THROW_ON_ERROR);
@@ -44,7 +46,7 @@ final class ShopifyContractTest extends TestCase
         $money = ['shopMoney' => ['amount' => '12.50', 'currencyCode' => 'EUR']];
 
         return ['POST /admin/api/2026-07/graphql.json' => static function (string $method, string $url, array $options) use ($wine, $shop, $money): MockResponse {
-            $query = json_decode($options['body'], true)['query'];
+            $query = Data::of(json_decode(Data::cast($options['body'] ?? null), true))->text('query');
 
             return new MockResponse(json_encode(['data' => match (true) {
                 str_contains($query, 'draftOrderCreate') => ['draftOrderCreate' => ['draftOrder' => ['id' => 'gid://shopify/DraftOrder/7', 'name' => '#D7', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'status' => 'OPEN', 'totalPrice' => '12.50'], 'userErrors' => []]],
@@ -54,13 +56,14 @@ final class ShopifyContractTest extends TestCase
                 str_contains($query, 'query Product(') => ['shop' => $shop, 'product' => $wine],
                 str_contains($query, 'query Shop') => ['shop' => $shop],
                 default => [],
-            }]));
+            }], \JSON_THROW_ON_ERROR));
         }];
     }
 
-    protected function signedNotification(): ?array
+    /** @return array{0: string, 1: array<string, string>} */
+    protected function signedNotification(): array
     {
-        $body = json_encode(['id' => 1042, 'admin_graphql_api_id' => 'gid://shopify/Order/1042', 'draft_order_id' => 7, 'note_attributes' => [['name' => 'omnitrade_reference', 'value' => 'ORDER-1042']]]);
+        $body = json_encode(['id' => 1042, 'admin_graphql_api_id' => 'gid://shopify/Order/1042', 'draft_order_id' => 7, 'note_attributes' => [['name' => 'omnitrade_reference', 'value' => 'ORDER-1042']]], \JSON_THROW_ON_ERROR);
 
         return [$body, ['X-Shopify-Hmac-Sha256' => Hmac::sign($body, self::SECRET), 'X-Shopify-Topic' => 'orders/paid', 'X-Shopify-Shop-Domain' => 'example.myshopify.com', 'X-Shopify-Webhook-Id' => 'wh-1']];
     }

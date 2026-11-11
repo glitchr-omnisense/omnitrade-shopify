@@ -16,6 +16,7 @@ use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
 use Omnitrade\Shopify\Api\Endpoint;
 use Omnitrade\Shopify\Api\Hmac;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\Documents;
 use Omnitrade\Shopify\Products;
 
@@ -42,6 +43,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
     /** @use ApiAwareTrait<Api> */
     use ApiAwareTrait;
 
+    /** @var array<string, mixed>|null */
     private ?array $shop = null;
 
     /** @param string|null $currency the prices' currency; null: the shop's, asked once */
@@ -74,6 +76,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
             throw new ProviderException('shopify', 'The notification is not JSON.');
         }
         $topic = (string) $request->header('X-Shopify-Topic');
+        $read = Data::of($payload);
 
         $status = match ($topic) {
             'orders/paid' => Status::PAID,
@@ -83,20 +86,20 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
         };
         $reference = null;
         if (str_starts_with($topic, 'orders/')) {
-            $reference = isset($payload['draft_order_id']) && '' !== (string) $payload['draft_order_id']
-                ? Endpoint::gid('DraftOrder', (string) $payload['draft_order_id'])
-                : (isset($payload['admin_graphql_api_id']) ? (string) $payload['admin_graphql_api_id'] : (isset($payload['id']) ? Endpoint::gid('Order', (string) $payload['id']) : null));
+            $reference = isset($payload['draft_order_id']) && '' !== $read->text('draft_order_id')
+                ? Endpoint::gid('DraftOrder', $read->text('draft_order_id'))
+                : (isset($payload['admin_graphql_api_id']) ? $read->text('admin_graphql_api_id') : (isset($payload['id']) ? Endpoint::gid('Order', $read->text('id')) : null));
         } elseif (isset($payload['admin_graphql_api_id'])) {
-            $reference = (string) $payload['admin_graphql_api_id'];
+            $reference = $read->text('admin_graphql_api_id');
         }
         $merchantReference = null;
         $tags = [];
-        foreach ($payload['note_attributes'] ?? [] as $attribute) {
-            $name = $attribute['name'] ?? $attribute['key'] ?? null;
+        foreach ($read->each('note_attributes') as $attribute) {
+            $name = $attribute->get('name') ?? $attribute->get('key');
             if (Documents::REFERENCE_KEY === $name) {
-                $merchantReference = (string) ($attribute['value'] ?? '') ?: null;
-            } elseif (\is_string($name) && '' !== $name && \is_scalar($attribute['value'] ?? null)) {
-                $tags[$name] = (string) $attribute['value'];
+                $merchantReference = $attribute->text('value') ?: null;
+            } elseif (\is_string($name) && '' !== $name && \is_scalar($attribute->get('value'))) {
+                $tags[$name] = $attribute->text('value');
             }
         }
         // The draft order's "site:..." tag, which the order keeps, when no attribute says it.
@@ -112,15 +115,15 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
         $stocks = [];
         if ('products/create' === $topic || 'products/update' === $topic) {
             [$currency, $taxIncluded] = $this->currency();
-            $product = Products::fromRest($payload, $currency, $taxIncluded);
+            $product = Products::fromRest(Data::map($payload), $currency, $taxIncluded);
             $reference = $product->reference;
         } elseif ('products/delete' === $topic && isset($payload['id'])) {
-            $reference = Endpoint::gid('Product', (string) $payload['id']);
+            $reference = Endpoint::gid('Product', $read->text('id'));
         } elseif ('inventory_levels/update' === $topic && isset($payload['inventory_item_id'])) {
-            $item = Endpoint::gid('InventoryItem', (string) $payload['inventory_item_id']);
+            $item = Endpoint::gid('InventoryItem', $read->text('inventory_item_id'));
             $reference = $item;
-            $available = \array_key_exists('available', $payload) && null !== $payload['available'] ? (int) $payload['available'] : null;
-            $stocks = [new Stock($item, $available, null !== $available, location: isset($payload['location_id']) ? Endpoint::gid('Location', (string) $payload['location_id']) : null, item: $item)];
+            $available = \array_key_exists('available', $payload) && null !== $payload['available'] ? Data::integer($payload['available']) : null;
+            $stocks = [new Stock($item, $available, null !== $available, location: isset($payload['location_id']) ? Endpoint::gid('Location', $read->text('location_id')) : null, item: $item)];
         }
 
         $request->setResult(new Notification(
@@ -142,8 +145,8 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
         if (null !== $this->currency && '' !== $this->currency) {
             return [$this->currency, null];
         }
-        $this->shop ??= $this->api->admin->query(Documents::SHOP)['shop'] ?? [];
+        $this->shop ??= Data::of($this->api->admin->query(Documents::SHOP))->fields('shop');
 
-        return [(string) ($this->shop['currencyCode'] ?? 'EUR'), isset($this->shop['taxesIncluded']) ? (bool) $this->shop['taxesIncluded'] : null];
+        return [Data::cast($this->shop['currencyCode'] ?? 'EUR'), isset($this->shop['taxesIncluded']) ? (bool) $this->shop['taxesIncluded'] : null];
     }
 }

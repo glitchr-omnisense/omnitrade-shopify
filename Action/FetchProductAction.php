@@ -11,6 +11,7 @@ use Omnitrade\Request\FetchProduct;
 use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
 use Omnitrade\Shopify\Api\Endpoint;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\Documents;
 use Omnitrade\Shopify\Products;
 
@@ -48,7 +49,7 @@ final class FetchProductAction implements ActionInterface, ApiAwareInterface
             // filter is everywhere. It matches loosely: keep the exact one.
             $data = $this->api->admin->query(Documents::PRODUCTS, ['first' => 5, 'after' => null, 'query' => sprintf('handle:"%s"', addcslashes($handle, '"\\'))]);
             $node = null;
-            foreach ($data['products']['nodes'] ?? [] as $candidate) {
+            foreach (Data::maps(Data::of($data)->get('products.nodes') ?? []) as $candidate) {
                 if (($candidate['handle'] ?? null) === $handle) {
                     $node = $candidate;
                     break;
@@ -65,10 +66,11 @@ final class FetchProductAction implements ActionInterface, ApiAwareInterface
             return;
         }
 
+        $shop = Data::of($data)->data('shop');
         $request->setResult(Products::fromGraphQL(
-            $node,
-            $this->currency ?: (string) ($data['shop']['currencyCode'] ?? 'EUR'),
-            isset($data['shop']['taxesIncluded']) ? (bool) $data['shop']['taxesIncluded'] : null,
+            Data::map($node),
+            $this->currency ?: Data::cast($shop->get('currencyCode') ?? 'EUR'),
+            $shop->has('taxesIncluded') ? (bool) $shop->get('taxesIncluded') : null,
         ));
     }
 

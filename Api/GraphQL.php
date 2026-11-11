@@ -6,6 +6,7 @@ use Omnisense\Contracts\Policy\Backoff;
 use Omnitrade\Exception\RateLimitedException;
 use Omnitrade\Http\Redaction;
 use Omnitrade\Http\Throttle;
+use Omnitrade\Shopify\Data;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -50,7 +51,8 @@ class GraphQL
     }
 
     /**
-     * @param array<string, mixed> $variables
+     * @param array<string, string> $headers
+     * @param array<string, mixed>  $variables
      *
      * @return array<string, mixed> the `data` object
      *
@@ -98,7 +100,7 @@ class GraphQL
             }
             if (!empty($payload['errors'])) {
                 // A list of errors, or one message (the shape of Shopify's REST errors: {"errors": "..."}).
-                $errors = \is_array($payload['errors']) ? $payload['errors'] : [['message' => (string) $payload['errors']]];
+                $errors = \is_array($payload['errors']) ? $payload['errors'] : [['message' => Data::cast($payload['errors'])]];
                 if ($mutation && $this->isThrottled($errors)) {
                     // The requested cost exceeded what the bucket held: Shopify ran nothing.
                     throw Redaction::withoutArguments(new RateLimitedException('shopify', 'Shopify throttled the mutation (THROTTLED): it was not run, nor sent again.', (int) ceil($this->backoff(1))));
@@ -111,24 +113,31 @@ class GraphQL
             }
             $this->respectBucket($payload);
 
-            return $payload['data'] ?? [];
+            return Data::map($payload['data'] ?? []);
         }
     }
 
-    /** Raise a mutation's own userErrors: Shopify answers 200 with them when it refuses on business grounds. */
+    /**
+     * Raise a mutation's own userErrors: Shopify answers 200 with them when it refuses on business grounds.
+     *
+     * @param array<mixed> $result
+     *
+     * @return array<mixed>
+     */
     public function assertNoUserErrors(string $what, array $result): array
     {
         if (!empty($result['userErrors'])) {
-            throw ShopifyApiException::fromErrors($what, $result['userErrors']);
+            throw ShopifyApiException::fromErrors($what, (array) $result['userErrors']);
         }
 
         return $result;
     }
 
+    /** @param array<mixed> $errors */
     private function isThrottled(array $errors): bool
     {
         foreach ($errors as $error) {
-            if ('THROTTLED' === ($error['extensions']['code'] ?? null)) {
+            if ('THROTTLED' === Data::of($error)->get('extensions.code')) {
                 return true;
             }
         }
@@ -136,15 +145,19 @@ class GraphQL
         return false;
     }
 
-    /** Wait for the bucket to refill if this query drained it. */
+    /**
+     * Wait for the bucket to refill if this query drained it.
+     *
+     * @param array<mixed> $payload
+     */
     private function respectBucket(array $payload): void
     {
-        $status = $payload['extensions']['cost']['throttleStatus'] ?? null;
+        $status = Data::of($payload)->get('extensions.cost.throttleStatus');
         if (!\is_array($status)) {
             return;
         }
-        $available = (float) ($status['currentlyAvailable'] ?? \PHP_INT_MAX);
-        $restoreRate = (float) ($status['restoreRate'] ?? 0);
+        $available = Data::decimal($status['currentlyAvailable'] ?? \PHP_INT_MAX);
+        $restoreRate = Data::decimal($status['restoreRate'] ?? 0);
         if ($available >= self::COST_FLOOR || $restoreRate <= 0) {
             return;
         }

@@ -10,6 +10,7 @@ use Omnitrade\Model\Status;
 use Omnitrade\Request\Refund;
 use Omnitrade\Shopify\Api\Hmac;
 use Omnitrade\Shopify\Api\ShopifyApiException;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\ShopifyGatewayFactory;
 use Omnitrade\Tests\Fixtures;
 use PHPUnit\Framework\TestCase;
@@ -20,26 +21,26 @@ final class ShopifyGatewayTest extends TestCase
 {
     private const SECRET = 'shpss_secret';
 
-    /** @var list<array{query: string, variables: array}> */
+    /** @var list<Data> the GraphQL documents sent, query and variables */
     private array $queries = [];
 
     private function gateway(): \Omnitrade\GatewayInterface
     {
         $http = new MockHttpClient(function (string $method, string $url, array $options): MockResponse {
             self::assertSame('https://example.myshopify.com/admin/api/2026-07/graphql.json', $url);
-            self::assertContains('X-Shopify-Access-Token: shpat_x', $options['headers']);
-            $sent = json_decode($options['body'], true);
+            self::assertContains('X-Shopify-Access-Token: shpat_x', Data::texts($options['headers'] ?? []));
+            $sent = Data::of(json_decode(Data::cast($options['body'] ?? null), true));
             $this->queries[] = $sent;
             $data = match (true) {
-                str_contains($sent['query'], 'draftOrderCreate') => ['draftOrderCreate' => ['draftOrder' => ['id' => 'gid://shopify/DraftOrder/7', 'name' => '#D7', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'status' => 'OPEN', 'totalPrice' => '12.50'], 'userErrors' => []]],
-                str_contains($sent['query'], 'query DraftOrder') => ['draftOrder' => 'gid://shopify/DraftOrder/8' === $sent['variables']['id']
+                str_contains($sent->text('query'), 'draftOrderCreate') => ['draftOrderCreate' => ['draftOrder' => ['id' => 'gid://shopify/DraftOrder/7', 'name' => '#D7', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'status' => 'OPEN', 'totalPrice' => '12.50'], 'userErrors' => []]],
+                str_contains($sent->text('query'), 'query DraftOrder') => ['draftOrder' => 'gid://shopify/DraftOrder/8' === $sent->get('variables.id')
                     ? ['id' => 'gid://shopify/DraftOrder/8', 'name' => '#D8', 'status' => 'COMPLETED', 'order' => ['id' => 'gid://shopify/Order/1042', 'name' => '#1042', 'displayFinancialStatus' => 'PAID', 'displayFulfillmentStatus' => 'UNFULFILLED']]
-                    : ('gid://shopify/DraftOrder/9' === $sent['variables']['id'] ? null : ['id' => $sent['variables']['id'], 'name' => '#D7', 'status' => 'OPEN', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'order' => null])],
-                str_contains($sent['query'], 'query Order') => ['order' => ['id' => 'gid://shopify/Order/1042', 'name' => '#1042', 'createdAt' => '2026-10-01T10:00:00Z', 'displayFinancialStatus' => 'PAID', 'displayFulfillmentStatus' => 'FULFILLED', 'totalPriceSet' => ['shopMoney' => ['amount' => '12.50', 'currencyCode' => 'EUR']], 'email' => 'camille@example.org', 'customer' => ['displayName' => 'Camille Durand', 'email' => 'camille@example.org'], 'shippingAddress' => ['address1' => '1 rue du Test', 'zip' => '67000', 'city' => 'Strasbourg', 'countryCodeV2' => 'FR'], 'lineItems' => ['nodes' => [['title' => 'Dix heures', 'quantity' => 1, 'sku' => null, 'variant' => ['id' => 'gid://shopify/ProductVariant/55'], 'originalUnitPriceSet' => ['shopMoney' => ['amount' => '12.50', 'currencyCode' => 'EUR']]]]]]],
+                    : ('gid://shopify/DraftOrder/9' === $sent->get('variables.id') ? null : ['id' => $sent->get('variables.id'), 'name' => '#D7', 'status' => 'OPEN', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'order' => null])],
+                str_contains($sent->text('query'), 'query Order') => ['order' => ['id' => 'gid://shopify/Order/1042', 'name' => '#1042', 'createdAt' => '2026-10-01T10:00:00Z', 'displayFinancialStatus' => 'PAID', 'displayFulfillmentStatus' => 'FULFILLED', 'totalPriceSet' => ['shopMoney' => ['amount' => '12.50', 'currencyCode' => 'EUR']], 'email' => 'camille@example.org', 'customer' => ['displayName' => 'Camille Durand', 'email' => 'camille@example.org'], 'shippingAddress' => ['address1' => '1 rue du Test', 'zip' => '67000', 'city' => 'Strasbourg', 'countryCodeV2' => 'FR'], 'lineItems' => ['nodes' => [['title' => 'Dix heures', 'quantity' => 1, 'sku' => null, 'variant' => ['id' => 'gid://shopify/ProductVariant/55'], 'originalUnitPriceSet' => ['shopMoney' => ['amount' => '12.50', 'currencyCode' => 'EUR']]]]]]],
                 default => [],
             };
 
-            return new MockResponse(json_encode(['data' => $data, 'extensions' => ['cost' => ['throttleStatus' => ['currentlyAvailable' => 1990, 'restoreRate' => 100]]]]));
+            return new MockResponse(json_encode(['data' => $data, 'extensions' => ['cost' => ['throttleStatus' => ['currentlyAvailable' => 1990, 'restoreRate' => 100]]]], \JSON_THROW_ON_ERROR));
         });
 
         return (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => 'shpat_x', 'webhook_secret' => self::SECRET, 'draft_order_tags' => ['omnitrade']]);
@@ -73,13 +74,13 @@ final class ShopifyGatewayTest extends TestCase
         self::assertTrue($transaction->isRedirect());
         self::assertSame('gid://shopify/DraftOrder/7', $transaction->reference);
         self::assertSame('https://example.myshopify.com/invoices/abc', $transaction->redirectUrl);
-        $input = $this->queries[0]['variables']['input'];
-        self::assertSame('gid://shopify/ProductVariant/55', $input['lineItems'][0]['variantId'], 'a line with a variant gid names the variant');
-        self::assertSame('12.50', $input['lineItems'][0]['originalUnitPriceWithCurrency']['amount']);
-        self::assertSame('4.90', $input['shippingLine']['priceWithCurrency']['amount'], 'the shipping carried over whole');
-        self::assertSame([['key' => 'omnitrade_reference', 'value' => 'ORDER-1042']], $input['customAttributes']);
-        self::assertSame(['omnitrade'], $input['tags']);
-        self::assertSame('camille@example.org', $input['email']);
+        $input = $this->queries[0]->data('variables.input');
+        self::assertSame('gid://shopify/ProductVariant/55', $input->get('lineItems.0.variantId'), 'a line with a variant gid names the variant');
+        self::assertSame('12.50', $input->get('lineItems.0.originalUnitPriceWithCurrency.amount'));
+        self::assertSame('4.90', $input->get('shippingLine.priceWithCurrency.amount'), 'the shipping carried over whole');
+        self::assertSame([['key' => 'omnitrade_reference', 'value' => 'ORDER-1042']], $input->get('customAttributes'));
+        self::assertSame(['omnitrade'], $input->get('tags'));
+        self::assertSame('camille@example.org', $input->get('email'));
         self::assertFalse($gateway->supports(Refund::class), 'refunds are Shopify\'s own');
     }
 
@@ -99,7 +100,7 @@ final class ShopifyGatewayTest extends TestCase
         self::assertSame('#1042', $order->number);
         self::assertSame(Status::PAID, $order->status);
         self::assertSame(1250, $order->total->amount);
-        self::assertSame('Camille Durand', $order->customer->name);
+        self::assertSame('Camille Durand', $order->customer?->name);
         self::assertSame('FR', $order->customer->country);
         self::assertSame('gid://shopify/ProductVariant/55', $order->lines[0]->reference);
         self::assertSame('FULFILLED', $order->fulfillmentStatus);
@@ -108,7 +109,7 @@ final class ShopifyGatewayTest extends TestCase
     public function testANotificationIsCheckedAgainstItsHmacAndShop(): void
     {
         $gateway = $this->gateway();
-        $body = json_encode(['id' => 1042, 'admin_graphql_api_id' => 'gid://shopify/Order/1042', 'draft_order_id' => 7, 'note_attributes' => [['name' => 'omnitrade_reference', 'value' => 'ORDER-1042']]]);
+        $body = json_encode(['id' => 1042, 'admin_graphql_api_id' => 'gid://shopify/Order/1042', 'draft_order_id' => 7, 'note_attributes' => [['name' => 'omnitrade_reference', 'value' => 'ORDER-1042']]], \JSON_THROW_ON_ERROR);
         $headers = ['X-Shopify-Hmac-Sha256' => Hmac::sign($body, self::SECRET), 'X-Shopify-Topic' => 'orders/paid', 'X-Shopify-Shop-Domain' => 'example.myshopify.com', 'X-Shopify-Webhook-Id' => 'wh-1'];
 
         $notification = $gateway->notify($body, $headers);

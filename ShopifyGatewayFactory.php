@@ -50,14 +50,14 @@ final class ShopifyGatewayFactory extends GatewayFactory
             'omnitrade.api' => function (Config $c) {
                 $http = $this->http ?? HttpClient::create();
 
-                return new Api(new Endpoint($c['shop_domain'], $c['api_version'], $c['admin_token'], $c['webhook_secret'], (int) $c['timeout']), $http, (array) $c['draft_order_tags'], null, (float) $c['retry_delay'], $c->backoff());
+                return new Api(new Endpoint(Data::castOrNull($c['shop_domain']), Data::castOrNull($c['api_version']), Data::castOrNull($c['admin_token']), Data::castOrNull($c['webhook_secret']), Data::integer($c['timeout'])), $http, array_map(Data::cast(...), (array) $c['draft_order_tags']), null, Data::decimal($c['retry_delay']), $c->backoff());
             },
             'omnitrade.action.purchase' => new PurchaseAction(),
             'omnitrade.action.fetch' => new FetchTransactionAction(),
             'omnitrade.action.order' => new FetchOrderAction(),
-            'omnitrade.action.notify' => static fn (Config $c) => new NotifyAction($c['currency'] ?: null),
-            'omnitrade.action.products' => static fn (Config $c) => new FetchProductsAction($c['currency'] ?: null),
-            'omnitrade.action.product' => static fn (Config $c) => new FetchProductAction($c['currency'] ?: null),
+            'omnitrade.action.notify' => static fn (Config $c) => new NotifyAction(Data::cast($c['currency']) ?: null),
+            'omnitrade.action.products' => static fn (Config $c) => new FetchProductsAction(Data::cast($c['currency']) ?: null),
+            'omnitrade.action.product' => static fn (Config $c) => new FetchProductAction(Data::cast($c['currency']) ?: null),
             'omnitrade.action.inventory' => new FetchInventoryAction(),
         ]);
     }

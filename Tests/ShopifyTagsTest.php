@@ -5,6 +5,7 @@ namespace Omnitrade\Shopify\Tests;
 use Omnitrade\Model\Money;
 use Omnitrade\Model\Payment;
 use Omnitrade\Shopify\Api\Hmac;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\ShopifyGatewayFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -20,29 +21,29 @@ final class ShopifyTagsTest extends TestCase
 {
     private const SECRET = 'shpss_test';
 
-    /** @var list<array<string, mixed>> */
+    /** @var list<Data> the GraphQL documents sent */
     private array $queries = [];
 
     public function testADraftOrderCarriesTheSite(): void
     {
         $this->gateway(['site' => 'solstay', 'env' => 'demo'])->purchase(new Payment(Money::of(1250, 'EUR'), 'B-42', 'Two nights', metadata: ['env' => 'mine', 'site' => 'wineseller']));
 
-        $input = $this->queries[0]['variables']['input'];
+        $input = $this->queries[0]->data('variables.input');
         self::assertSame([
             ['key' => 'omnitrade_reference', 'value' => 'B-42'],
             ['key' => 'site', 'value' => 'solstay'],
             ['key' => 'env', 'value' => 'mine'],
-        ], $input['customAttributes']);
-        self::assertSame(['omnitrade', 'site:solstay'], $input['tags']);
+        ], $input->get('customAttributes'));
+        self::assertSame(['omnitrade', 'site:solstay'], $input->get('tags'));
     }
 
     public function testWithoutTagsTheDraftOrderIsAsBefore(): void
     {
         $this->gateway([])->purchase(new Payment(Money::of(1250, 'EUR'), 'B-42', 'Two nights', metadata: ['env' => 'mine']));
 
-        $input = $this->queries[0]['variables']['input'];
-        self::assertSame([['key' => 'omnitrade_reference', 'value' => 'B-42'], ['key' => 'env', 'value' => 'mine']], $input['customAttributes']);
-        self::assertSame(['omnitrade'], $input['tags']);
+        $input = $this->queries[0]->data('variables.input');
+        self::assertSame([['key' => 'omnitrade_reference', 'value' => 'B-42'], ['key' => 'env', 'value' => 'mine']], $input->get('customAttributes'));
+        self::assertSame(['omnitrade'], $input->get('tags'));
     }
 
     public function testAnOrdersWebhookGivesTheSiteBack(): void
@@ -61,9 +62,9 @@ final class ShopifyTagsTest extends TestCase
     private function gateway(array $tags): \Omnitrade\GatewayInterface
     {
         $http = new MockHttpClient(function (string $method, string $url, array $options): MockResponse {
-            $this->queries[] = json_decode($options['body'], true);
+            $this->queries[] = Data::of(json_decode(Data::cast($options['body'] ?? null), true));
 
-            return new MockResponse((string) json_encode(['data' => ['draftOrderCreate' => ['draftOrder' => ['id' => 'gid://shopify/DraftOrder/7', 'name' => '#D7', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'status' => 'OPEN', 'totalPrice' => '12.50'], 'userErrors' => []]]]));
+            return new MockResponse((string) json_encode(['data' => ['draftOrderCreate' => ['draftOrder' => ['id' => 'gid://shopify/DraftOrder/7', 'name' => '#D7', 'invoiceUrl' => 'https://example.myshopify.com/invoices/abc', 'status' => 'OPEN', 'totalPrice' => '12.50'], 'userErrors' => []]]], \JSON_THROW_ON_ERROR));
         });
 
         return (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => 'shpat_x', 'webhook_secret' => self::SECRET, 'draft_order_tags' => ['omnitrade']] + ([] === $tags ? [] : ['tags' => $tags]));
@@ -76,8 +77,9 @@ final class ShopifyTagsTest extends TestCase
      */
     private static function event(array $order): array
     {
-        $body = (string) json_encode($order + ['admin_graphql_api_id' => 'gid://shopify/Order/'.$order['id']]);
+        $id = Data::cast($order['id'] ?? null);
+        $body = (string) json_encode($order + ['admin_graphql_api_id' => 'gid://shopify/Order/'.$id], \JSON_THROW_ON_ERROR);
 
-        return [$body, ['X-Shopify-Hmac-Sha256' => Hmac::sign($body, self::SECRET), 'X-Shopify-Topic' => 'orders/paid', 'X-Shopify-Shop-Domain' => 'example.myshopify.com', 'X-Shopify-Webhook-Id' => 'wh-'.$order['id']]];
+        return [$body, ['X-Shopify-Hmac-Sha256' => Hmac::sign($body, self::SECRET), 'X-Shopify-Topic' => 'orders/paid', 'X-Shopify-Shop-Domain' => 'example.myshopify.com', 'X-Shopify-Webhook-Id' => 'wh-'.$id]];
     }
 }

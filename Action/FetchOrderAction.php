@@ -15,6 +15,7 @@ use Omnitrade\Request\FetchOrder;
 use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
 use Omnitrade\Shopify\Api\Endpoint;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\Documents;
 
 /** A Shopify order, by its gid or its bare id. */
@@ -41,32 +42,33 @@ final class FetchOrderAction implements ActionInterface, ApiAwareInterface
         if (!\is_array($order)) {
             throw new ProviderException('shopify', sprintf('Shopify knows no order %s.', $request->reference));
         }
-        $request->setResult(self::order($order));
+        $request->setResult(self::order(Data::map($order)));
     }
 
     /** @param array<string, mixed> $order as Documents::ORDER returns it */
     public static function order(array $order): PlatformOrder
     {
-        $total = $order['totalPriceSet']['shopMoney'] ?? [];
-        $currency = strtoupper((string) ($total['currencyCode'] ?? 'EUR'));
-        $financial = strtoupper((string) ($order['displayFinancialStatus'] ?? ''));
-        $address = $order['shippingAddress'] ?? [];
+        $read = Data::of($order);
+        $total = $read->data('totalPriceSet.shopMoney');
+        $currency = strtoupper(Data::cast($total->get('currencyCode') ?? 'EUR'));
+        $financial = strtoupper($read->text('displayFinancialStatus'));
+        $address = $read->data('shippingAddress');
         $lines = [];
-        foreach ($order['lineItems']['nodes'] ?? [] as $node) {
-            $unit = $node['originalUnitPriceSet']['shopMoney'] ?? [];
+        foreach ($read->each('lineItems.nodes') as $node) {
+            $unit = $node->data('originalUnitPriceSet.shopMoney');
             $lines[] = new Line(
-                (string) ($node['title'] ?? ''),
-                Money::fromDecimal((string) ($unit['amount'] ?? '0'), (string) ($unit['currencyCode'] ?? $currency)),
-                (int) ($node['quantity'] ?? 1),
-                $node['sku'] ?? null,
-                reference: $node['variant']['id'] ?? null,
+                $node->text('title'),
+                Money::fromDecimal(Data::cast($unit->get('amount') ?? '0'), Data::cast($unit->get('currencyCode') ?? $currency)),
+                Data::integer($node->get('quantity') ?? 1),
+                $node->textOrNull('sku'),
+                reference: $node->textOrNull('variant.id'),
             );
         }
 
         return new PlatformOrder(
             provider: 'shopify',
-            reference: (string) $order['id'],
-            number: $order['name'] ?? null,
+            reference: $read->text('id'),
+            number: $read->textOrNull('name'),
             status: match ($financial) {
                 'PAID' => Status::PAID,
                 'PARTIALLY_REFUNDED' => Status::PARTIALLY_REFUNDED,
@@ -75,20 +77,20 @@ final class FetchOrderAction implements ActionInterface, ApiAwareInterface
                 'AUTHORIZED' => Status::AUTHORIZED,
                 default => Status::PENDING,
             },
-            total: Money::fromDecimal((string) ($total['amount'] ?? '0'), $currency),
+            total: Money::fromDecimal(Data::cast($total->get('amount') ?? '0'), $currency),
             customer: new Customer(
-                email: $order['email'] ?? $order['customer']['email'] ?? null,
-                name: $order['customer']['displayName'] ?? null,
-                phone: $address['phone'] ?? null,
-                street: array_values(array_filter([$address['address1'] ?? null, $address['address2'] ?? null])),
-                postalCode: $address['zip'] ?? null,
-                city: $address['city'] ?? null,
-                country: $address['countryCodeV2'] ?? null,
+                email: Data::castOrNull($read->get('email') ?? $read->get('customer.email')),
+                name: $read->textOrNull('customer.displayName'),
+                phone: $address->textOrNull('phone'),
+                street: array_values(array_filter([$address->textOrNull('address1'), $address->textOrNull('address2')], static fn (?string $line) => null !== $line && '' !== $line && '0' !== $line)),
+                postalCode: $address->textOrNull('zip'),
+                city: $address->textOrNull('city'),
+                country: $address->textOrNull('countryCodeV2'),
             ),
             lines: $lines,
             financialStatus: $financial ?: null,
-            fulfillmentStatus: $order['displayFulfillmentStatus'] ?? null,
-            createdAt: isset($order['createdAt']) ? new \DateTimeImmutable((string) $order['createdAt']) : null,
+            fulfillmentStatus: $read->textOrNull('displayFulfillmentStatus'),
+            createdAt: $read->has('createdAt') ? new \DateTimeImmutable($read->text('createdAt')) : null,
             raw: $order,
         );
     }

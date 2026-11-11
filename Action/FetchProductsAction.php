@@ -9,6 +9,7 @@ use Omnitrade\Model\ProductPage;
 use Omnitrade\Request\FetchProducts;
 use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\Documents;
 use Omnitrade\Shopify\Products;
 
@@ -43,15 +44,17 @@ final class FetchProductsAction implements ActionInterface, ApiAwareInterface
             'after' => $request->cursor,
             'query' => self::search($request->updatedSince, $request->query),
         ]);
-        $currency = $this->currency ?: (string) ($data['shop']['currencyCode'] ?? 'EUR');
-        $taxIncluded = isset($data['shop']['taxesIncluded']) ? (bool) $data['shop']['taxesIncluded'] : null;
+        $read = Data::of($data);
+        $shop = $read->data('shop');
+        $currency = $this->currency ?: Data::cast($shop->get('currencyCode') ?? 'EUR');
+        $taxIncluded = $shop->has('taxesIncluded') ? (bool) $shop->get('taxesIncluded') : null;
         $products = [];
-        foreach ($data['products']['nodes'] ?? [] as $node) {
+        foreach (Data::maps($read->get('products.nodes') ?? []) as $node) {
             $products[] = Products::fromGraphQL($node, $currency, $taxIncluded);
         }
-        $info = $data['products']['pageInfo'] ?? [];
+        $info = $read->data('products.pageInfo');
 
-        $request->setResult(new ProductPage($products, !empty($info['hasNextPage']) && !empty($info['endCursor']) ? (string) $info['endCursor'] : null));
+        $request->setResult(new ProductPage($products, !empty($info->get('hasNextPage')) && !empty($info->get('endCursor')) ? $info->text('endCursor') : null));
     }
 
     /** Shopify's search syntax: "updated_at:>'2026-10-01T00:00:00Z' margaux". */

@@ -16,6 +16,7 @@ use Omnitrade\Model\Transaction;
 use Omnitrade\Request\Purchase;
 use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\Documents;
 
 /**
@@ -53,18 +54,18 @@ final class PurchaseAction implements ActionInterface, ApiAwareInterface, TagsAw
         \assert($request instanceof Purchase);
         $payment = $request->payment;
         $result = $this->api->admin->mutate(Documents::DRAFT_ORDER_CREATE, ['input' => self::input($payment, $this->api->draftOrderTags, $this->tags())], 'draftOrderCreate');
-        $draft = $result['draftOrder'] ?? [];
+        $draft = Data::of($result)->fields('draftOrder');
         if (empty($draft['id']) || empty($draft['invoiceUrl'])) {
             throw new ProviderException('shopify', 'Shopify created no draft order with an invoice URL.');
         }
 
         $request->setResult(new Transaction(
             provider: 'shopify',
-            reference: (string) $draft['id'],
+            reference: Data::cast($draft['id']),
             status: Status::PENDING,
-            amount: isset($draft['totalPrice']) ? Money::fromDecimal((string) $draft['totalPrice'], $payment->amount->currency) : $payment->amount,
-            redirectUrl: (string) $draft['invoiceUrl'],
-            message: $draft['status'] ?? null,
+            amount: isset($draft['totalPrice']) ? Money::fromDecimal(Data::cast($draft['totalPrice']), $payment->amount->currency) : $payment->amount,
+            redirectUrl: Data::cast($draft['invoiceUrl']),
+            message: Data::castOrNull($draft['status'] ?? null),
             metadata: ['name' => $draft['name'] ?? null, 'shop' => $this->api->endpoint->shop()],
             raw: $result,
         ));

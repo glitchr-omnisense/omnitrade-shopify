@@ -10,6 +10,7 @@ use Omnitrade\Model\Transaction;
 use Omnitrade\Request\FetchTransaction;
 use Omnitrade\Request\Request;
 use Omnitrade\Shopify\Api;
+use Omnitrade\Shopify\Data;
 use Omnitrade\Shopify\Documents;
 
 /**
@@ -43,8 +44,9 @@ final class FetchTransactionAction implements ActionInterface, ApiAwareInterface
 
             return;
         }
-        $status = strtoupper((string) ($draft['status'] ?? ''));
-        $financial = strtoupper((string) ($draft['order']['displayFinancialStatus'] ?? ''));
+        $read = Data::of($draft);
+        $status = strtoupper($read->text('status'));
+        $financial = strtoupper($read->text('order.displayFinancialStatus'));
         $state = match (true) {
             'COMPLETED' === $status && 'REFUNDED' === $financial => Status::REFUNDED,
             'COMPLETED' === $status && 'PARTIALLY_REFUNDED' === $financial => Status::PARTIALLY_REFUNDED,
@@ -57,10 +59,10 @@ final class FetchTransactionAction implements ActionInterface, ApiAwareInterface
             provider: 'shopify',
             reference: $request->reference,
             status: $state,
-            redirectUrl: Status::PENDING === $state ? ($draft['invoiceUrl'] ?? null) : null,
+            redirectUrl: Status::PENDING === $state ? $read->textOrNull('invoiceUrl') : null,
             message: $financial ?: $status,
-            metadata: array_filter(['name' => $draft['name'] ?? null, 'order' => $draft['order']['id'] ?? null, 'order_name' => $draft['order']['name'] ?? null]),
-            raw: $draft,
+            metadata: array_filter(['name' => $read->get('name'), 'order' => $read->get('order.id'), 'order_name' => $read->get('order.name')]),
+            raw: $read->toArray(),
         ));
     }
 }
