@@ -9,6 +9,7 @@ use Omnitrade\Model\Payment;
 use Omnitrade\Model\Status;
 use Omnitrade\Request\Refund;
 use Omnitrade\Shopify\Api\Hmac;
+use Omnitrade\Shopify\Api\ShopifyApiException;
 use Omnitrade\Shopify\ShopifyGatewayFactory;
 use Omnitrade\Tests\Fixtures;
 use PHPUnit\Framework\TestCase;
@@ -42,6 +43,24 @@ final class ShopifyGatewayTest extends TestCase
         });
 
         return (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => 'shpat_x', 'webhook_secret' => self::SECRET, 'draft_order_tags' => ['omnitrade']]);
+    }
+
+    /**
+     * An answer 200 whose errors is one message, the shape of Shopify's REST errors
+     * ({"errors": "[API] Invalid API key or access token ..."}), not a list: a
+     * ShopifyApiException with it, not a TypeError.
+     */
+    public function testErrorsGivenAsOneMessageAreShopifysRefusal(): void
+    {
+        $http = new MockHttpClient(new MockResponse('{"errors":"[API] Invalid API key or access token (unrecognized login or wrong password)"}'));
+        $gateway = (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => 'shpat_x']);
+
+        try {
+            $gateway->fetchProducts();
+            self::fail('refused');
+        } catch (ShopifyApiException $e) {
+            self::assertStringContainsString('Invalid API key or access token', $e->getMessage());
+        }
     }
 
     public function testAPurchaseIsADraftOrderPaidOnTheInvoicePage(): void

@@ -13,6 +13,9 @@
   recorded requests (`ShopifyTagsTest`).
 
 ### Fixed
+- A GraphQL answer whose `errors` is one message rather than a list (the shape of Shopify's REST
+  errors, `{"errors": "[API] Invalid API key or access token ..."}`) is a `ShopifyApiException` with
+  that message; it was a `TypeError`.
 - A mutation (`draftOrderCreate`) is never sent twice: a 5xx, which may come after it ran, was retried
   up to three times (three draft orders at worst). Now a 5xx is a `ShopifyApiException`, a 429 or
   `THROTTLED` (answered before running it) a `RateLimitedException`. Queries are retried as before. The

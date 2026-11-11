@@ -97,15 +97,17 @@ class GraphQL
                 throw Redaction::withoutArguments(new ShopifyApiException('Shopify returned a body that is not JSON.'));
             }
             if (!empty($payload['errors'])) {
-                if ($mutation && \is_array($payload['errors']) && $this->isThrottled($payload['errors'])) {
+                // A list of errors, or one message (the shape of Shopify's REST errors: {"errors": "..."}).
+                $errors = \is_array($payload['errors']) ? $payload['errors'] : [['message' => (string) $payload['errors']]];
+                if ($mutation && $this->isThrottled($errors)) {
                     // The requested cost exceeded what the bucket held: Shopify ran nothing.
                     throw Redaction::withoutArguments(new RateLimitedException('shopify', 'Shopify throttled the mutation (THROTTLED): it was not run, nor sent again.', (int) ceil($this->backoff(1))));
                 }
-                if ($this->isThrottled($payload['errors']) && $attempt < self::MAX_ATTEMPTS) {
+                if ($this->isThrottled($errors) && $attempt < self::MAX_ATTEMPTS) {
                     ($this->sleep)($this->backoff($attempt));
                     continue;
                 }
-                throw Redaction::withoutArguments(ShopifyApiException::fromErrors('Shopify rejected the query', $payload['errors']));
+                throw Redaction::withoutArguments(ShopifyApiException::fromErrors('Shopify rejected the query', $errors));
             }
             $this->respectBucket($payload);
 
