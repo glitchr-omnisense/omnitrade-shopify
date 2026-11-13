@@ -4,6 +4,39 @@ Shopify for [omnisense/omnitrade](https://github.com/glitchr-omnisense/omnitrade
 shop's invoice page (a draft order with your prices), the shop's orders, its catalogue, and its webhooks - over
 the Admin GraphQL API, its cost bucket respected.
 
+## Install and a first call
+
+```sh
+composer require omnitrade/shopify
+```
+
+No account for this first call: Shopify's answer is recorded (Symfony's `MockHttpClient` answers in
+place of the API), so nothing leaves the process. With your own credentials, give the factory your
+HTTP client (or none: it makes its own).
+
+```php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use Omnitrade\Model\Money;
+use Omnitrade\Model\Payment;
+use Omnitrade\Shopify\ShopifyGatewayFactory;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+
+// Shopify's answer (the draft order created), recorded: no shop, and nothing leaves the process.
+$http = new MockHttpClient(new MockResponse('{"data": {"draftOrderCreate": {"draftOrder": {"id": "gid://shopify/DraftOrder/7", "name": "#D7", "status": "OPEN", "totalPrice": "12.50", "invoiceUrl": "https://example.myshopify.com/invoices/abc"}, "userErrors": []}}}'));
+$gateway = (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => 'shpat_not_a_token']);
+
+$transaction = $gateway->purchase(new Payment(amount: Money::of(1250, 'EUR'), reference: 'ORDER-1042', returnUrl: 'https://shop.example/back'));
+echo $transaction->status->value, ' ', $transaction->redirectUrl, "\n";   // pending https://example.myshopify.com/invoices/abc
+```
+
+A real call needs a Shopify store and an Admin API access token (below).
+
+## Configuration
+
 ```php
 $gateway = (new ShopifyGatewayFactory($http))->create(['shop_domain' => 'example.myshopify.com', 'admin_token' => '...']);   // $http: the application's HTTP client; none given, the factory makes its own
 ```
